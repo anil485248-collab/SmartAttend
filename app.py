@@ -1715,11 +1715,12 @@ def get_teacher_students():
     }), 200
 
 
+init_database()
+
 if __name__ == "__main__":
-    init_database()
     app.run(
-    host="0.0.0.0",
-    port=5000,
-    debug=True,
-    ssl_context=("localhost+3.pem", "localhost+3-key.pem")
-)
+        host="0.0.0.0",
+        port=5000,
+        debug=True,
+        ssl_context=("localhost+3.pem", "localhost+3-key.pem")
+    )
