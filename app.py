@@ -1717,6 +1717,10 @@ def get_teacher_students():
 
 init_database()
 
+@app.route("/admin.html")
+def admin_page():
+    return send_from_directory(".", "admin.html")
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
