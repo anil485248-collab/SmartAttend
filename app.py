@@ -1714,6 +1714,13 @@ def get_teacher_students():
         "students": result
     }), 200
 
+@app.route("/admin.html")
+def admin_page():
+    return send_from_directory(".", "admin.html")
+
+
+init_database()
+
 
 init_database()
 
