@@ -1,0 +1,253 @@
+<!DOCTYPE html>  <html lang="en">  <head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>SmartAttend - College Location</title>  
+
+<style>  
+    body {  
+        margin: 0;  
+        font-family: Arial, sans-serif;  
+        background: #071426;  
+        color: white;  
+    }  
+
+    .container {  
+        max-width: 900px;  
+        margin: 50px auto;  
+        padding: 20px;  
+    }  
+
+    h1 {  
+        color: #5eb8ff;  
+    }  
+
+    .subtitle {  
+        color: #b8c7d9;  
+        margin-bottom: 30px;  
+    }  
+
+    .card {  
+        background: #10243d;  
+        border: 1px solid #315b82;  
+        border-radius: 18px;  
+        padding: 30px;  
+    }  
+
+    label {  
+        display: block;  
+        margin-top: 20px;  
+        margin-bottom: 8px;  
+    }  
+
+    input {  
+        width: 100%;  
+        box-sizing: border-box;  
+        padding: 14px;  
+        border-radius: 10px;  
+        border: 1px solid #47749d;  
+        background: #071426;  
+        color: white;  
+        font-size: 16px;  
+    }  
+
+    button {  
+        margin-top: 25px;  
+        padding: 14px 24px;  
+        border: none;  
+        border-radius: 10px;  
+        background: #36a8ff;  
+        color: white;  
+        font-size: 16px;  
+        cursor: pointer;  
+    }  
+
+    button:hover {  
+        background: #168fe8;  
+    }  
+
+    .back {  
+        background: transparent;  
+        border: 1px solid #47749d;  
+    }  
+</style>
+
+</head>  <body>  <div class="container">  
+
+    <h1>📍 College Location</h1>  
+
+    <div class="subtitle">  
+        Admin Control Center → Configure SmartAttend GPS geofence  
+    </div>  
+
+    <div class="card">  
+
+        <h2>College Building GPS Settings</h2>  
+
+        <label>Latitude</label>  
+        <input  
+            type="number"  
+            id="latitude"  
+            step="any"  
+            placeholder="Enter college latitude">  
+
+        <label>Longitude</label>  
+        <input  
+            type="number"  
+            id="longitude"  
+            step="any"  
+            placeholder="Enter college longitude">  
+
+        <label>Geofence Radius (meters)</label>  
+        <input  
+            type="number"  
+            id="radius"  
+            value="50"  
+            min="10">  
+
+        <label>Required Presence Time (minutes)</label>  
+        <input  
+            type="number"  
+            id="requiredTime"  
+            value="60"  
+            min="1">  
+
+        <label>Maximum GPS Accuracy (meters)</label>  
+        <input  
+            type="number"  
+            id="accuracy"  
+            value="30"  
+            min="1">  
+
+        <button onclick="getCurrentLocation()">  
+            📍 Get My Current Location  
+        </button>  
+
+        <button onclick="saveLocation()">  
+            💾 Save Location Settings  
+        </button>  
+
+        <button class="back"  
+                onclick="window.location.href='admin-dashboard.html'">  
+            ← Back to Admin Dashboard  
+        </button>  
+
+    </div>  
+
+</div>  
+
+<script>  
+
+    function getCurrentLocation() {  
+
+        if (!navigator.geolocation) {  
+
+            alert("GPS is not supported by this browser.");  
+            return;  
+        }  
+
+        navigator.geolocation.getCurrentPosition(  
+
+            function(position) {  
+
+                document.getElementById("latitude").value =  
+                    position.coords.latitude;  
+
+                document.getElementById("longitude").value =  
+                    position.coords.longitude;  
+
+                alert("Current location detected successfully.");  
+
+            },  
+
+            function(error) {  
+
+                alert(  
+                    "Unable to get location. Please allow GPS permission."  
+                );  
+
+            },  
+
+            {  
+                enableHighAccuracy: true,  
+                timeout: 15000,  
+                maximumAge: 0  
+            }  
+        );  
+    }  
+
+
+   async function saveLocation() {
+
+    const latitude =
+        document.getElementById("latitude").value;
+
+    const longitude =
+        document.getElementById("longitude").value;
+
+    const radius =
+        document.getElementById("radius").value;
+
+    const requiredTime =
+        document.getElementById("requiredTime").value;
+
+    const accuracy =
+        document.getElementById("accuracy").value;
+
+
+    if (!latitude || !longitude) {
+
+        alert("❌ Latitude and longitude are required.");
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "/api/admin/location",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    latitude: Number(latitude),
+                    longitude: Number(longitude),
+                    radius: Number(radius),
+                    required_minutes: Number(requiredTime),
+                    max_accuracy: Number(accuracy)
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (data.success) {
+
+            alert(
+                "✅ College location settings saved successfully."
+            );
+
+        } else {
+
+            alert("❌ " + data.message);
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "❌ Unable to save college location."
+        );
+    }
+}
+
+</script>
+
+</body>  </html>

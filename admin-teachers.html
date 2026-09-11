@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Teachers</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #0f172a, #172554);
+            color: white;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #60a5fa;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #94a3b8;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 250px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+            outline: none;
+        }
+
+        .search:focus {
+            border-color: #3b82f6;
+        }
+
+        .back-btn {
+            padding: 13px 20px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            background: #1e293b;
+            color: white;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #334155;
+        }
+
+        .count {
+            margin-bottom: 15px;
+            color: #94a3b8;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #334155;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.15);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            background: #1e3a8a;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 14px 15px;
+            border-bottom: 1px solid #334155;
+            color: #cbd5e1;
+        }
+
+        tr:hover td {
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        .teacher-id {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .program {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .status-message {
+            padding: 30px;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>👨‍🏫 Registered Teachers</h1>
+
+        <p>
+            Admin Control Center → View all registered teachers
+        </p>
+    </div>
+
+
+    <div class="top-bar">
+
+        <input
+            type="text"
+            id="searchInput"
+            class="search"
+            placeholder="Search by name, Teacher ID, program..."
+            oninput="filterTeachers()"
+        >
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+            ← Back to Admin Dashboard
+        </button>
+
+    </div>
+
+
+    <div
+        class="count"
+        id="teacherCount"
+    >
+        Loading teachers...
+    </div>
+
+
+    <div class="card">
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Teacher ID</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Category</th>
+                        <th>Program</th>
+                        <th>Created At</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="teacherTable">
+
+                    <tr>
+                        <td
+                            colspan="6"
+                            class="status-message"
+                        >
+                            Loading teachers...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let teachers = [];
+
+
+/* =========================================
+   LOAD TEACHERS FROM BACKEND
+========================================= */
+
+async function loadTeachers() {
+
+    const table =
+        document.getElementById(
+            "teacherTable"
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/teachers"
+            );
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load teachers."
+            );
+
+        }
+
+
+        teachers =
+            data.teachers || [];
+
+
+        displayTeachers(teachers);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        table.innerHTML = `
+            <tr>
+                <td
+                    colspan="6"
+                    class="status-message"
+                >
+                    ❌ Unable to load teachers from backend.
+                </td>
+            </tr>
+        `;
+
+        document.getElementById(
+            "teacherCount"
+        ).textContent =
+            "Unable to load teachers.";
+
+    }
+
+}
+
+
+/* =========================================
+   DISPLAY TEACHERS
+========================================= */
+
+function displayTeachers(list) {
+
+    const table =
+        document.getElementById(
+            "teacherTable"
+        );
+
+    const count =
+        document.getElementById(
+            "teacherCount"
+        );
+
+
+    count.textContent =
+        "Total Teachers: " + list.length;
+
+
+    if (list.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+                <td
+                    colspan="7"
+                    class="status-message"
+                >
+                    No teachers found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    table.innerHTML = "";
+
+
+    list.forEach(teacher => {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td class="teacher-id">
+                ${escapeHtml(
+                    teacher.teacher_id
+                )}
+            </td>
+
+            <td>
+                ${escapeHtml(
+                    teacher.name
+                )}
+            </td>
+
+            <td>
+                ${escapeHtml(
+                    teacher.mobile
+                )}
+            </td>
+
+            <td>
+                ${escapeHtml(
+                    teacher.category
+                )}
+            </td>
+
+            <td class="program">
+                ${escapeHtml(
+                    teacher.program
+                )}
+            </td>
+
+            <td>
+                ${escapeHtml(
+                    teacher.created_at
+                )}
+            <td>
+              <button
+                onclick="deleteTeacher('${escapeHtml(teacher.teacher_id)}')"
+                style="background:#dc2626;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">
+                Delete
+              </button>
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+}
+
+async function deleteTeacher(teacherId) {
+
+    const confirmDelete = confirm(
+        "Are you sure you want to delete teacher " +
+        teacherId +
+        "?"
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/admin/teachers/${encodeURIComponent(teacherId)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            alert(data.message);
+
+            // Refresh teacher list
+            loadTeachers();
+
+        } else {
+
+            alert(data.message || "Unable to delete teacher.");
+
+        }
+
+    } catch (error) {
+
+        console.error("Delete teacher error:", error);
+
+        alert("Server error. Unable to delete teacher.");
+
+    }
+}
+
+/* =========================================
+   SEARCH TEACHERS
+========================================= */
+
+function filterTeachers() {
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+    if (!search) {
+
+        displayTeachers(teachers);
+
+        return;
+
+    }
+
+
+    const filtered =
+        teachers.filter(teacher => {
+
+            return (
+
+                String(
+                    teacher.teacher_id || ""
+                )
+                .toLowerCase()
+                .includes(search)
+
+                ||
+
+                String(
+                    teacher.name || ""
+                )
+                .toLowerCase()
+                .includes(search)
+
+                ||
+
+                String(
+                    teacher.mobile || ""
+                )
+                .toLowerCase()
+                .includes(search)
+
+                ||
+
+                String(
+                    teacher.category || ""
+                )
+                .toLowerCase()
+                .includes(search)
+
+                ||
+
+                String(
+                    teacher.program || ""
+                )
+                .toLowerCase()
+                .includes(search)
+
+            );
+
+        });
+
+
+    displayTeachers(filtered);
+
+}
+
+
+/* =========================================
+   HTML SAFETY
+========================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================
+   BACK
+========================================= */
+
+function goBack() {
+
+    window.location.href =
+        "admin-dashboard.html";
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+loadTeachers();
+
+</script>
+
+</body>
+</html>

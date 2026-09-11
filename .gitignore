@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+smartattend.db
+localhost+3-key.pem
+localhost+3.pem
+.env

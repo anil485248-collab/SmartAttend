@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Teacher Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #020617,
+                #0f172a,
+                #172554
+            );
+            color: white;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid #2563eb;
+            padding: 18px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .logout {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout:hover {
+            background: #1e293b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #94a3b8;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #334155;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .info-card small {
+            color: #94a3b8;
+        }
+
+        .info-card h3 {
+            margin-top: 8px;
+            color: #60a5fa;
+        }
+
+        .filter-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #2563eb;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .filter-box h2 {
+            margin-bottom: 15px;
+            color: #93c5fd;
+        }
+
+        select {
+            width: 100%;
+            max-width: 350px;
+            padding: 13px;
+            border-radius: 9px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        select option {
+            background: #0f172a;
+        }
+
+        .students-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #334155;
+            border-radius: 15px;
+            padding: 22px;
+            overflow-x: auto;
+        }
+
+        .students-box h2 {
+            color: #93c5fd;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            color: #93c5fd;
+            background: #111827;
+        }
+
+        td {
+            color: #cbd5e1;
+        }
+
+        .present {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #facc15;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 30px;
+        }
+
+        .error {
+            text-align: center;
+            color: #fca5a5;
+            padding: 30px;
+        }
+
+        @media (max-width: 750px) {
+
+            header {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 20px 12px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 24px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        SmartAttend
+    </div>
+
+    <button
+        class="logout"
+        onclick="logout()"
+    >
+        Logout
+    </button>
+
+</header>
+
+
+<div class="container">
+
+    <div class="welcome">
+
+        <h1>
+            👨‍🏫 Teacher Dashboard
+        </h1>
+
+        <p id="welcomeMessage">
+            Loading teacher information...
+        </p>
+
+    </div>
+
+
+    <!-- TEACHER INFORMATION -->
+
+    <div class="info-grid">
+
+        <div class="info-card">
+
+            <small>
+                Teacher ID
+            </small>
+
+            <h3 id="teacherId">
+                Loading...
+            </h3>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <small>
+                Teacher Name
+            </small>
+
+            <h3 id="teacherName">
+                Loading...
+            </h3>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <small>
+                Authorized Program
+            </small>
+
+            <h3 id="teacherProgram">
+                Loading...
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEMESTER FILTER -->
+
+    <div class="filter-box">
+
+        <h2>
+            🎓 Select Semester
+        </h2>
+
+        <select
+            id="semester"
+            onchange="loadStudents()"
+        >
+
+            <option value="">
+                Select Semester
+            </option>
+
+            <option value="1">
+                1st Semester
+            </option>
+
+            <option value="2">
+                2nd Semester
+            </option>
+
+            <option value="3">
+                3rd Semester
+            </option>
+
+            <option value="4">
+                4th Semester
+            </option>
+
+            <option value="5">
+                5th Semester
+            </option>
+
+            <option value="6">
+                6th Semester
+            </option>
+
+            <option value="7">
+                7th Semester
+            </option>
+
+            <option value="8">
+                8th Semester
+            </option>
+
+        </select>
+
+    </div>
+
+    <!-- BRANCH FILTER -->
+
+    <div class="filter-box" id="branchFilter">
+
+        <h2>
+            🏫 Select Branch
+        </h2>
+
+        <select
+            id="branch"
+            onchange="loadStudents()"
+        >
+
+            <option value="">
+                Select Branch
+            </option>
+
+            <option value="CSE">
+                CSE
+            </option>
+
+            <option value="CSE (AI & ML)">
+                CSE (AI & ML)
+            </option>
+
+            <option value="CSE (Data Science)">
+                CSE (Data Science)
+            </option>
+
+            <option value="ECE">
+                ECE
+            </option>
+
+            <option value="EE">
+                Electrical Engineering
+            </option>
+
+            <option value="ME">
+                Mechanical Engineering
+            </option>
+
+            <option value="CE">
+                Civil Engineering
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- STUDENT TABLE -->
+
+    <div class="students-box">
+
+        <h2>
+            👨‍🎓 Students
+        </h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Student ID
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Enrollment No.
+                    </th>
+
+                    <th>
+                        Program
+                    </th>
+
+                    <th>
+                        Semester
+                    </th>
+
+                    <th>
+                        Attendance
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="studentTable">
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        Select a semester to view students.
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* ============================================
+   LOAD LOGGED-IN TEACHER
+============================================ */
+
+const teacherData =
+    sessionStorage.getItem("teacher");
+
+
+if (!teacherData) {
+
+    alert(
+        "Please login as a teacher first."
+    );
+
+    window.location.href =
+        "teacher-login.html";
+
+} else {
+
+    const teacher =
+        JSON.parse(teacherData);
+
+
+    document.getElementById(
+        "teacherId"
+    ).textContent =
+        teacher.teacher_id;
+
+
+    document.getElementById(
+        "teacherName"
+    ).textContent =
+        teacher.name;
+
+    const branchFilter =
+    document.getElementById("branchFilter");
+
+if (teacher.program === "B.Tech") {
+    branchFilter.style.display = "block";
+} else {
+    branchFilter.style.display = "none";
+}
+
+
+    document.getElementById(
+        "teacherProgram"
+    ).textContent =
+        teacher.program;
+
+
+    document.getElementById(
+        "welcomeMessage"
+    ).textContent =
+        "Welcome, " +
+        teacher.name +
+        ". You are authorized to access " +
+        teacher.program +
+        " students.";
+
+}
+
+
+/* ============================================
+   LOAD STUDENTS
+============================================ */
+
+function loadStudents() {
+
+    const semester =
+        document.getElementById("semester").value;
+
+    const branch =
+    document.getElementById("branch").value;
+
+    const table =
+        document.getElementById("studentTable");
+
+    if (semester === "") {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    Select a semester to view students.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    const teacherData =
+        sessionStorage.getItem("teacher");
+
+    if (!teacherData) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    Teacher session not found.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const teacher =
+        JSON.parse(teacherData);
+
+    table.innerHTML = `
+        <tr>
+            <td colspan="6" class="empty">
+                Loading students...
+            </td>
+        </tr>
+    `;
+
+    fetch(
+    `/api/teacher/students?teacher_id=${encodeURIComponent(teacher.teacher_id)}&semester=${encodeURIComponent(semester)}&branch=${encodeURIComponent(branch)}`
+)
+        .then(response => response.json())
+        .then(data => {
+
+            if (!data.success) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty">
+                            ${data.message}
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            if (data.students.length === 0) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty">
+                            No students found for this semester.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            table.innerHTML = "";
+
+            data.students.forEach(student => {
+
+                const row =
+                    document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${student.student_id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.enrollment || "N/A"}</td>
+                    <td>${student.program}</td>
+                    <td>${student.semester}</td>
+                    <td>View Attendance</td>
+                `;
+
+                table.appendChild(row);
+            });
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty">
+                        Unable to load students from backend.
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+
+/* ============================================
+   LOGOUT
+============================================ */
+
+function logout() {
+
+    sessionStorage.removeItem("teacher");
+
+    window.location.href =
+        "teacher.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

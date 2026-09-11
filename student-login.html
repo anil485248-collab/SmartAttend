@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Student Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #0f172a, #172554);
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 430px;
+
+            background: rgba(15, 23, 42, 0.96);
+
+            border: 1px solid #2563eb;
+
+            border-radius: 20px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 0 35px rgba(37, 99, 235, 0.25);
+        }
+
+        .logo {
+            text-align: center;
+
+            font-size: 32px;
+
+            font-weight: bold;
+
+            color: #60a5fa;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+
+            color: #94a3b8;
+
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 20px;
+
+            border-radius: 10px;
+
+            border: 1px solid #334155;
+
+            background: #020617;
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #3b82f6;
+
+            box-shadow:
+                0 0 10px rgba(59, 130, 246, 0.25);
+        }
+
+        .login-btn {
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .back-btn {
+            width: 100%;
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border: 1px solid #334155;
+
+            border-radius: 10px;
+
+            background: transparent;
+
+            color: #cbd5e1;
+
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #1e293b;
+        }
+
+        .message {
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 13px;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        .error {
+            background: rgba(127, 29, 29, 0.25);
+
+            border: 1px solid #ef4444;
+
+            color: #fca5a5;
+        }
+
+        .success {
+            background: rgba(22, 101, 52, 0.25);
+
+            border: 1px solid #22c55e;
+
+            color: #86efac;
+        }
+
+        .info {
+            margin-top: 20px;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            background: rgba(30, 41, 59, 0.7);
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <div class="logo">
+        SmartAttend
+    </div>
+
+    <div class="subtitle">
+        Student Login
+    </div>
+
+
+    <form onsubmit="loginStudent(event)">
+
+        <label>
+            Student ID
+        </label>
+
+        <input
+            type="text"
+            id="studentId"
+            placeholder="Enter Student ID"
+            required
+        >
+
+
+        <label>
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter Password"
+            required
+        >
+
+
+        <button
+            type="submit"
+            class="login-btn"
+        >
+            Login
+        </button>
+
+    </form>
+
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+    <div class="info">
+        Login using your SmartAttend Student ID and password.
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="goBack()"
+    >
+        ← Back
+    </button>
+
+</div>
+
+
+<script>
+
+/*
+    IMPORTANT:
+    If this HTML file is opened directly from VS Code
+    using file://, move it automatically to the Flask server.
+
+    This makes the page work in:
+    1. VS Code Integrated Browser
+    2. Phone + Cloudflare
+    3. Normal browser through Flask
+*/
+
+if (window.location.protocol === "file:") {
+
+    window.location.href =
+        "https://localhost:5000/student-login.html";
+
+}
+
+
+async function loginStudent(event) {
+
+    event.preventDefault();
+
+
+    const studentId =
+        document.getElementById("studentId")
+        .value
+        .trim();
+
+
+    const password =
+        document.getElementById("password")
+        .value;
+
+
+    const message =
+        document.getElementById("message");
+
+
+    message.style.display = "none";
+
+
+    try {
+
+        /*
+            Relative API URL.
+
+            This automatically uses the same server
+            from which the page was opened.
+        */
+
+        const response =
+            await fetch(
+                "/api/students/login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        student_id: studentId,
+
+                        password: password
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "⚠️ " +
+                (
+                    data.message ||
+                    "Invalid Student ID or Password."
+                );
+
+            message.style.display =
+                "block";
+
+            return;
+        }
+
+
+        /* LOGIN SUCCESS */
+
+        message.className =
+            "message success";
+
+        message.textContent =
+            "✅ Login successful!";
+
+        message.style.display =
+            "block";
+
+
+        /*
+            Save logged-in student information
+            temporarily for the dashboard.
+        */
+
+        sessionStorage.setItem(
+            "student",
+            JSON.stringify(data.student)
+        );
+
+
+        /*
+            Open dashboard using the same server.
+            Relative URL works on both laptop and phone.
+        */
+
+        setTimeout(function() {
+
+            window.location.href =
+                "/student-dashboard.html";
+
+        }, 700);
+
+
+    } catch (error) {
+
+        console.error(
+            "Student Login Error:",
+            error
+        );
+
+
+        message.className =
+            "message error";
+
+        message.textContent =
+            "❌ Backend server is not connected. " +
+            "Please make sure Flask is running.";
+
+        message.style.display =
+            "block";
+    }
+
+}
+
+
+function goBack() {
+
+    /*
+        Go back using the same server.
+    */
+
+    window.location.href =
+        "/student.html";
+
+}
+
+</script>
+
+</body>
+</html>

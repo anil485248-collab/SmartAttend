@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Admin Login</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #020617,
+                    #0f172a,
+                    #172554
+                );
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 430px;
+
+            background:
+                rgba(15, 23, 42, 0.96);
+
+            border:
+                1px solid #2563eb;
+
+            border-radius: 20px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 0 35px rgba(37, 99, 235, 0.25);
+        }
+
+        .logo {
+            text-align: center;
+
+            font-size: 32px;
+
+            font-weight: bold;
+
+            color: #60a5fa;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+
+            color: #94a3b8;
+
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 20px;
+
+            border-radius: 10px;
+
+            border: 1px solid #334155;
+
+            background: #020617;
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #3b82f6;
+        }
+
+        .login-btn {
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .message {
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 13px;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+        }
+
+        .error {
+            background: rgba(127, 29, 29, 0.25);
+
+            border: 1px solid #ef4444;
+
+            color: #fca5a5;
+        }
+
+        .success {
+            background: rgba(22, 101, 52, 0.25);
+
+            border: 1px solid #22c55e;
+
+            color: #86efac;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="login-box">
+
+    <div class="logo">
+        SmartAttend
+    </div>
+
+    <div class="subtitle">
+        👑 Admin Login
+    </div>
+
+
+    <form onsubmit="loginAdmin(event)">
+
+        <label>
+            Admin ID
+        </label>
+
+        <input
+            type="text"
+            id="adminId"
+            placeholder="Enter Admin ID"
+            required
+        >
+
+
+        <label>
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter Password"
+            required
+        >
+
+
+        <button
+            type="submit"
+            class="login-btn">
+
+            Login
+
+        </button>
+
+    </form>
+
+
+    <div
+        id="message"
+        class="message">
+    </div>
+
+</div>
+
+
+<script>
+    async function loginAdmin(event) {
+
+    event.preventDefault();
+
+    const adminId =
+        document.getElementById("adminId")
+        .value
+        .trim();
+
+    const password =
+        document.getElementById("password")
+        .value;
+
+    const message =
+        document.getElementById("message");
+
+    message.style.display = "none";
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        admin_id: adminId,
+                        password: password
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "⚠️ " +
+                (
+                    data.message ||
+                    "Invalid Admin ID or Password."
+                );
+
+            message.style.display =
+                "block";
+
+            return;
+        }
+
+        sessionStorage.setItem(
+            "admin",
+            JSON.stringify(data.admin)
+        );
+
+        message.className =
+            "message success";
+
+        message.textContent =
+            "✅ Admin login successful!";
+
+        message.style.display =
+            "block";
+
+        setTimeout(function() {
+
+            window.location.href =
+                "admin-dashboard.html";
+
+        }, 700);
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.className =
+            "message error";
+
+        message.textContent =
+            "❌ Backend server is not connected.";
+
+        message.style.display =
+            "block";
+    }
+}
+
+</script>
+
+</body>
+
+</html>

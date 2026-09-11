@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #050b18;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .logo {
+            font-size: 52px;
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #a9b7d0;
+            font-size: 18px;
+            margin-bottom: 45px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+        }
+
+        button {
+            width: 190px;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: #1479e9;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0d5fbd;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 50px;
+            color: #667792;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="logo">
+            SmartAttend
+        </div>
+
+        <div class="subtitle">
+            GPS Based Automatic Attendance System
+        </div>
+
+        <div class="buttons">
+
+            <button onclick="studentLogin()">
+                Student
+            </button>
+
+            <button onclick="teacherLogin()">
+                Teacher
+            </button>
+
+        </div>
+
+        <div class="footer">
+            Smart • Secure • Automatic
+        </div>
+
+    </div>
+
+   <script>
+
+    function studentLogin() {
+        window.location.href = "student.html";
+    }
+
+    function teacherLogin() {
+
+    window.location.href = "teacher.html";
+
+}
+
+</script>
+
+</body>
+</html>

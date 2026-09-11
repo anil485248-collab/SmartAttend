@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Student Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(33,150,243,.18),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(0,110,255,.15),
+                    transparent 30%
+                ),
+
+                #050b18;
+
+            color: white;
+        }
+
+        /* HEADER */
+
+        header {
+            background: rgba(15,28,50,.95);
+
+            border-bottom:
+                1px solid rgba(33,150,243,.4);
+
+            padding: 18px 30px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2196f3;
+        }
+
+        .logout-btn {
+            padding: 9px 16px;
+
+            border-radius: 8px;
+
+            border: 1px solid #304563;
+
+            background: transparent;
+
+            color: #c5d2e6;
+
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #101d34;
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 100%;
+            max-width: 1150px;
+
+            margin: auto;
+
+            padding: 35px 20px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #91a3bf;
+            font-size: 14px;
+        }
+
+        /* INFO CARDS */
+
+        .info-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background:
+                rgba(15,28,50,.94);
+
+            border:
+                1px solid #243852;
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.2);
+        }
+
+        .info-card small {
+            color: #71839e;
+            font-size: 13px;
+        }
+
+        .info-card h3 {
+            margin-top: 8px;
+            color: #60a5fa;
+            font-size: 18px;
+
+            word-break: break-word;
+        }
+
+        /* ATTENDANCE */
+
+        .attendance-card {
+            background:
+                rgba(15,28,50,.94);
+
+            border:
+                1px solid #2563eb;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,.25);
+        }
+
+        .attendance-card h2 {
+            color: #93c5fd;
+            margin-bottom: 20px;
+        }
+
+        .attendance-content {
+            display: flex;
+
+            align-items: center;
+
+            gap: 30px;
+
+            flex-wrap: wrap;
+        }
+
+        .percentage {
+            width: 150px;
+            height: 150px;
+
+            border-radius: 50%;
+
+            border: 10px solid #2563eb;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            flex-direction: column;
+
+            background: #091426;
+        }
+
+        .percentage strong {
+            font-size: 32px;
+            color: #60a5fa;
+        }
+
+        .percentage span {
+            font-size: 12px;
+            color: #91a3bf;
+        }
+
+        .attendance-details {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .attendance-details p {
+            margin-bottom: 10px;
+            color: #c5d2e6;
+        }
+
+        .present {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .absent {
+            color: #f87171;
+            font-weight: bold;
+        }
+
+        /* LOADING */
+
+        .loading {
+            color: #60a5fa;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #f87171;
+            margin-top: 10px;
+        }
+
+        /* HISTORY */
+
+        .history-box {
+            background:
+                rgba(15,28,50,.94);
+
+            border:
+                1px solid #243852;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            overflow-x: auto;
+        }
+
+        .history-box h2 {
+            color: #93c5fd;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 600px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+
+            text-align: left;
+
+            border-bottom:
+                1px solid #243852;
+        }
+
+        th {
+            color: #93c5fd;
+            background: #0b1628;
+        }
+
+        td {
+            color: #c5d2e6;
+        }
+
+        .status-present {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .status-absent {
+            color: #f87171;
+            font-weight: bold;
+        }
+
+        .no-records {
+            text-align: center;
+            color: #71839e;
+            padding: 25px;
+        }
+
+        /* CALCULATOR */
+
+        .calculator {
+            margin-top: 25px;
+
+            background:
+                rgba(15,28,50,.94);
+
+            border:
+                1px solid #243852;
+
+            border-radius: 18px;
+
+            padding: 25px;
+        }
+
+        .calculator h2 {
+            color: #93c5fd;
+            margin-bottom: 15px;
+        }
+
+        .calculator p {
+            color: #91a3bf;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .calculator input {
+            padding: 12px;
+
+            width: 200px;
+
+            max-width: 100%;
+
+            border-radius: 8px;
+
+            border: 1px solid #304563;
+
+            background: #091426;
+
+            color: white;
+
+            outline: none;
+        }
+
+        .calculator button {
+            padding: 12px 18px;
+
+            margin-left: 8px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #1479e9;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+        .calculator button:hover {
+            background: #0d5fbd;
+        }
+
+        #calculatorResult {
+            margin-top: 15px;
+
+            color: #60a5fa;
+
+            font-weight: bold;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 750px) {
+
+            header {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 25px 12px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 24px;
+            }
+
+            .attendance-content {
+                justify-content: center;
+            }
+
+            .calculator input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .calculator button {
+                margin-left: 0;
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        SmartAttend
+    </div>
+
+    <button
+        class="logout-btn"
+        onclick="logout()">
+
+        Logout
+
+    </button>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- WELCOME -->
+
+    <div class="welcome">
+
+        <h1 id="welcomeText">
+            Welcome, Student
+        </h1>
+
+        <p>
+            Your SmartAttend student dashboard
+        </p>
+
+    </div>
+
+
+    <!-- STUDENT INFORMATION -->
+
+    <div class="info-grid">
+
+
+        <div class="info-card">
+
+            <small>
+                Student ID
+            </small>
+
+            <h3 id="studentId">
+                -
+            </h3>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <small>
+                Enrollment Number
+            </small>
+
+            <h3 id="enrollment">
+                -
+            </h3>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <small>
+                Program
+            </small>
+
+            <h3 id="program">
+                -
+            </h3>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <small>
+                Branch / Department
+            </small>
+
+            <h3 id="branch">
+                -
+            </h3>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <small>
+                Academic Level
+            </small>
+
+            <h3 id="semester">
+                -
+            </h3>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <small>
+                Mobile Number
+            </small>
+
+            <h3 id="mobile">
+                -
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- ATTENDANCE -->
+
+    <div class="attendance-card">
+
+        <h2>
+            📊 Attendance Overview
+        </h2>
+
+
+        <div class="attendance-content">
+
+
+            <div class="percentage">
+
+                <strong id="attendancePercentage">
+                    0%
+                </strong>
+
+                <span>
+                    Attendance
+                </span>
+
+            </div>
+
+
+            <div class="attendance-details">
+
+                <p>
+                    Total Working Days:
+                    <strong id="totalDays">
+                        0
+                    </strong>
+                </p>
+
+
+                <p>
+                    Present Days:
+                    <strong
+                        class="present"
+                        id="presentDays">
+
+                        0
+
+                    </strong>
+                </p>
+
+
+                <p>
+                    Absent Days:
+                    <strong
+                        class="absent"
+                        id="absentDays">
+
+                        0
+
+                    </strong>
+                </p>
+
+                <p
+                    id="attendanceMessage"
+                    class="loading">
+
+                    Loading attendance...
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ATTENDANCE HISTORY -->
+
+    <div class="history-box">
+
+        <h2>
+            📅 Attendance History
+        </h2>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Day
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="historyTable">
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        class="no-records">
+
+                        Loading attendance history...
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ATTENDANCE CALCULATOR -->
+
+    <div class="calculator">
+
+        <h2>
+            🧮 Attendance Calculator
+        </h2>
+
+        <p>
+            Calculate how many additional present days
+            you may need to reach your target attendance.
+        </p>
+
+
+        <input
+            type="number"
+            id="targetPercentage"
+            min="1"
+            max="100"
+            placeholder="Target %">
+
+
+        <button
+            onclick="calculateAttendance()">
+
+            Calculate
+
+        </button>
+
+
+        <div id="calculatorResult"></div>
+
+    </div>
+
+
+</div>
+
+<div class="card" style="margin-top: 25px;">
+
+    <div class="card-icon">
+        📍
+    </div>
+
+    <h2>GPS Attendance</h2>
+
+    <p id="gpsStatus">
+        Click the button to check your college location.
+    </p>
+
+    <p id="gpsTimer" style="margin-top: 10px; font-weight: bold;">
+    ⏱️ Attendance Timer: Not Started
+    </p>
+
+    <button
+        onclick="startGPSAttendance()"
+        style="
+            margin-top: 15px;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 10px;
+            background: #38bdf8;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        "
+    >
+        📍 Start GPS Attendance
+    </button>
+
+</div>
+
+
+<script>
+
+let totalDays = 0;
+let presentDays = 0;
+let absentDays = 0;
+let attendance = 0;
+
+const studentData =
+    sessionStorage.getItem("student");
+
+if (!studentData) {
+
+    alert("Please login first.");
+
+    window.location.href =
+        "student-login.html";
+
+} else {
+
+    try {
+
+        const student =
+            JSON.parse(studentData);
+
+        document.getElementById(
+            "welcomeText"
+        ).textContent =
+            "Welcome, " + student.name;
+
+        document.getElementById(
+            "studentId"
+        ).textContent =
+            student.student_id;
+
+        document.getElementById(
+            "enrollment"
+        ).textContent =
+            student.enrollment;
+
+        document.getElementById(
+            "program"
+        ).textContent =
+            student.program;
+
+        document.getElementById(
+            "branch"
+        ).textContent =
+            student.branch || "N/A";
+
+        document.getElementById(
+            "semester"
+        ).textContent =
+            student.semester || "N/A";
+
+        document.getElementById(
+            "mobile"
+        ).textContent =
+            student.mobile;
+
+        loadAttendance(
+            student.student_id
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Please login again."
+        );
+
+        sessionStorage.removeItem(
+            "student"
+        );
+
+        window.location.href =
+            "student-login.html";
+    }
+}
+
+async function loadAttendance(studentId) {
+
+    const message =
+        document.getElementById(
+            "attendanceMessage"
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/students/" +
+                encodeURIComponent(studentId) +
+                "/attendance"
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load attendance."
+            );
+        }
+
+        totalDays =
+            data.summary.total_days || 0;
+
+        presentDays =
+            data.summary.present_days || 0;
+
+        absentDays =
+            data.summary.absent_days || 0;
+
+        attendance =
+            data.summary.attendance_percentage || 0;
+
+        document.getElementById(
+            "totalDays"
+        ).textContent =
+            totalDays;
+
+        document.getElementById(
+            "presentDays"
+        ).textContent =
+            presentDays;
+
+        document.getElementById(
+            "absentDays"
+        ).textContent =
+            absentDays;
+
+        document.getElementById(
+            "attendancePercentage"
+        ).textContent =
+            attendance + "%";
+
+        if (totalDays === 0) {
+
+            message.textContent =
+                "No attendance records found yet.";
+
+        } else {
+
+            message.textContent =
+                "Attendance loaded from database.";
+
+        }
+
+        displayHistory(
+            data.history || []
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Attendance Error:",
+            error
+        );
+
+        message.textContent =
+            "Unable to connect to SmartAttend backend.";
+
+        document.getElementById(
+            "historyTable"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="3"
+                    class="no-records">
+
+                    Unable to load attendance history.
+
+                </td>
+
+            </tr>
+
+        `;
+    }
+}
+
+function displayHistory(history) {
+
+    const table =
+        document.getElementById(
+            "historyTable"
+        );
+
+    if (!history || history.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="3"
+                    class="no-records">
+
+                    No attendance records available.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+    table.innerHTML = "";
+
+    history.forEach(record => {
+
+        const row =
+            document.createElement("tr");
+
+        const dateCell =
+            document.createElement("td");
+
+        const dayCell =
+            document.createElement("td");
+
+        const statusCell =
+            document.createElement("td");
+
+        const dateObject =
+            new Date(
+                record.date + "T00:00:00"
+            );
+
+        dateCell.textContent =
+            dateObject.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+        dayCell.textContent =
+            dateObject.toLocaleDateString(
+                "en-IN",
+                {
+                    weekday: "long"
+                }
+            );
+
+        statusCell.textContent =
+            record.status;
+
+        if (record.status === "Present") {
+
+            statusCell.className =
+                "status-present";
+
+        } else {
+
+            statusCell.className =
+                "status-absent";
+        }
+
+        row.appendChild(dateCell);
+        row.appendChild(dayCell);
+        row.appendChild(statusCell);
+
+        table.appendChild(row);
+
+    });
+}
+
+
+
+let attendanceTimer = null;
+let attendanceStartTime = null;
+let attendanceElapsedSeconds = 0;
+let gpsWatchId = null;
+
+async function startGPSAttendance() {
+
+    const status = document.getElementById("gpsStatus");
+
+    status.textContent = "📍 Loading college location...";
+
+
+    if (!navigator.geolocation) {
+
+        status.textContent =
+            "❌ GPS is not supported by this browser.";
+
+        return;
+    }
+
+
+    try {
+
+        const locationResponse =
+            await fetch("/api/admin/location");
+
+        const locationData =
+            await locationResponse.json();
+
+
+        if (!locationData.success) {
+
+            status.textContent =
+                "❌ " + locationData.message;
+
+            return;
+        }
+
+
+        const collegeLocation =
+            locationData.location;
+
+
+        const collegeLat =
+            Number(collegeLocation.latitude);
+
+        const collegeLon =
+            Number(collegeLocation.longitude);
+
+        const radius =
+            Number(collegeLocation.radius);
+
+        const maxAccuracy =
+            Number(collegeLocation.max_accuracy);
+
+
+        status.textContent =
+            "📍 College location loaded. Checking your GPS...";
+
+
+        gpsWatchId =
+            navigator.geolocation.watchPosition(
+
+                function(position) {
+
+                    const studentLat =
+                        position.coords.latitude;
+
+                    const studentLon =
+                        position.coords.longitude;
+
+                    const accuracy =
+                        position.coords.accuracy;
+
+
+                    if (accuracy > maxAccuracy) {
+
+                        status.textContent =
+                            "⚠️ GPS accuracy is too low: " +
+                            Math.round(accuracy) +
+                            " meters.";
+
+                        resetAttendanceTimer();
+
+                        return;
+                    }
+
+
+                    const distance =
+                        calculateDistance(
+                            studentLat,
+                            studentLon,
+                            collegeLat,
+                            collegeLon
+                        );
+
+
+                    if (distance <= radius) {
+
+                        status.textContent =
+                            "🟢 You are inside college area. Distance: " +
+                            Math.round(distance) +
+                            " meters.";
+
+                        startAttendanceTimer();
+
+                    } else {
+
+                        status.textContent =
+                            "🔴 You are outside college area. Distance: " +
+                            Math.round(distance) +
+                            " meters.";
+
+                        resetAttendanceTimer();
+                    }
+
+
+                    console.log(
+                        "Student Latitude:",
+                        studentLat
+                    );
+
+                    console.log(
+                        "Student Longitude:",
+                        studentLon
+                    );
+
+                    console.log(
+                        "GPS Accuracy:",
+                        accuracy
+                    );
+
+                    console.log(
+                        "Distance from College:",
+                        distance
+                    );
+
+                },
+
+
+                function(error) {
+
+                    console.error(error);
+
+                    status.textContent =
+                        "❌ Unable to get GPS location. Please allow location permission.";
+
+                },
+
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+
+            );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+            "❌ Unable to load college location from server.";
+    }
+}
+
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+
+    const earthRadius = 6371000;
+
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c =
+        2 * Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        );
+
+    return earthRadius * c;
+}
+
+async function markGPSAttendance() {
+
+    const studentData = sessionStorage.getItem("student");
+
+    if (!studentData) {
+        return;
+    }
+
+    const student = JSON.parse(studentData);
+
+    const today = new Date().toISOString().split("T")[0];
+
+    try {
+
+        const response = await fetch(
+            "/api/attendance/mark",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    student_id: student.student_id,
+                    attendance_date: today,
+                    status: "Present"
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            document.getElementById("gpsStatus").textContent =
+                "✅ Attendance marked Present successfully!";
+
+            alert("✅ Today's attendance has been marked Present.");
+
+            loadAttendance(student.student_id);
+
+        } else {
+
+            document.getElementById("gpsStatus").textContent =
+                "❌ " + data.message;
+        }
+
+    } catch (error) {
+
+        console.error("GPS Attendance Error:", error);
+
+        document.getElementById("gpsStatus").textContent =
+            "❌ Unable to save attendance.";
+    }
+}
+
+function startAttendanceTimer() {
+
+    const timerElement = document.getElementById("gpsTimer");
+
+    if (attendanceTimer !== null) {
+        return;
+    }
+
+    attendanceStartTime = Date.now();
+    attendanceElapsedSeconds = 0;
+
+    const requiredSeconds = 60 * 60;
+
+    attendanceTimer = setInterval(function() {
+
+        attendanceElapsedSeconds++;
+
+        const minutes = Math.floor(attendanceElapsedSeconds / 60);
+        const seconds = attendanceElapsedSeconds % 60;
+
+        timerElement.textContent =
+            "⏱️ Attendance Timer: " +
+            minutes + " min " +
+            String(seconds).padStart(2, "0") + " sec";
+
+        if (attendanceElapsedSeconds >= requiredSeconds) {
+
+    clearInterval(attendanceTimer);
+    attendanceTimer = null;
+
+    timerElement.textContent =
+        "✅ 60 minutes completed. Attendance eligible.";
+
+    document.getElementById("gpsStatus").textContent =
+        "🟢 Required presence time completed.";
+
+    markGPSAttendance();
+}
+
+    }, 1000);
+}
+
+function resetAttendanceTimer() {
+
+    if (attendanceTimer !== null) {
+        clearInterval(attendanceTimer);
+    }
+
+    attendanceTimer = null;
+    attendanceStartTime = null;
+    attendanceElapsedSeconds = 0;
+
+    const timerElement = document.getElementById("gpsTimer");
+
+    if (timerElement) {
+        timerElement.textContent =
+            "⏱️ Attendance Timer: Reset";
+    }
+}
+
+function calculateAttendance() {
+
+    const target =
+        Number(
+            document.getElementById(
+                "targetPercentage"
+            ).value
+        );
+
+    const result =
+        document.getElementById(
+            "calculatorResult"
+        );
+
+    if (
+        !target ||
+        target < 1 ||
+        target > 100
+    ) {
+
+        result.textContent =
+            "Please enter a target between 1% and 100%.";
+
+        return;
+    }
+
+    if (attendance >= target) {
+
+        result.textContent =
+            "✅ Your current attendance is already above your target.";
+
+        return;
+    }
+
+    if (target === 100) {
+
+        result.textContent =
+            "⚠️ A 100% target cannot be reached if you already have an absence.";
+
+        return;
+    }
+
+    const targetDecimal =
+        target / 100;
+
+    let requiredDays =
+        Math.ceil(
+            (
+                targetDecimal * totalDays
+                -
+                presentDays
+            )
+            /
+            (
+                1 - targetDecimal
+            )
+        );
+
+    if (requiredDays < 0) {
+
+        requiredDays = 0;
+    }
+
+    result.textContent =
+        "You need approximately " +
+        requiredDays +
+        " additional consecutive present day(s) to reach " +
+        target +
+        "%.";
+}
+
+
+function logout() {
+
+    sessionStorage.removeItem(
+        "student"
+    );
+
+    window.location.href =
+        "student.html";
+}
+
+</script>

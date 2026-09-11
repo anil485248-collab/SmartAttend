@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Teacher Login</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #0f172a, #172554);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 430px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #2563eb;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 0 35px rgba(37, 99, 235, 0.25);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+            outline: none;
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .login-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+
+        .back-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            background: transparent;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #1e293b;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(30, 41, 59, 0.7);
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .message {
+            display: none;
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .error {
+            background: rgba(127, 29, 29, 0.25);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .success {
+            background: rgba(22, 101, 52, 0.25);
+            border: 1px solid #22c55e;
+            color: #86efac;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <div class="logo">
+            SmartAttend
+        </div>
+
+        <div class="subtitle">
+            Teacher Login
+        </div>
+
+        <form onsubmit="loginTeacher(event)">
+
+            <label>
+                Teacher ID
+            </label>
+
+            <input
+                type="text"
+                id="teacherId"
+                placeholder="Enter Teacher ID"
+                required
+            >
+
+            <label>
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter Password"
+                required
+            >
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginButton"
+            >
+                Login
+            </button>
+
+        </form>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+        <div class="info">
+            Login using your SmartAttend Teacher ID and password.
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+            ← Back
+        </button>
+
+    </div>
+
+
+    <script>
+
+        async function loginTeacher(event) {
+
+            event.preventDefault();
+
+
+            const teacherId =
+                document.getElementById("teacherId")
+                .value
+                .trim();
+
+
+            const password =
+                document.getElementById("password")
+                .value;
+
+
+            const loginButton =
+                document.getElementById("loginButton");
+
+
+            const message =
+                document.getElementById("message");
+
+
+            message.style.display = "none";
+
+
+            if (teacherId === "" || password === "") {
+
+                showMessage(
+                    "Please enter Teacher ID and Password.",
+                    false
+                );
+
+                return;
+            }
+
+
+            loginButton.disabled = true;
+
+            loginButton.textContent =
+                "Checking...";
+
+
+            try {
+
+                const response = await fetch(
+                    "/api/teachers/login",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            teacher_id: teacherId,
+
+                            password: password
+
+                        })
+                    }
+                );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok || !result.success) {
+
+                    showMessage(
+                        result.message ||
+                        "Invalid Teacher ID or Password.",
+                        false
+                    );
+
+                    return;
+                }
+
+
+                /*
+                   LOGIN SUCCESS
+                */
+
+                const teacher =
+                    result.teacher;
+
+
+                showMessage(
+                    "✅ Login successful! Welcome " +
+                    teacher.name +
+                    ".",
+                    true
+                );
+
+
+                /*
+                   Save logged-in teacher information
+                   temporarily in browser.
+                */
+
+                sessionStorage.setItem(
+                    "teacher",
+                    JSON.stringify(teacher)
+                );
+
+
+                /*
+                   Wait a moment so user can see
+                   successful login message.
+                */
+
+                setTimeout(function() {
+
+                    window.location.href =
+                        "teacher-dashboard.html";
+
+                }, 1000);
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    "Cannot connect to SmartAttend server. " +
+                    "Please make sure Flask backend is running.",
+                    false
+                );
+
+            } finally {
+
+                loginButton.disabled = false;
+
+                loginButton.textContent =
+                    "Login";
+
+            }
+
+        }
+
+
+        function showMessage(text, success) {
+
+            const message =
+                document.getElementById("message");
+
+
+            message.textContent =
+                text;
+
+
+            message.className =
+                success
+                    ? "message success"
+                    : "message error";
+
+
+            message.style.display =
+                "block";
+
+        }
+
+
+        function goBack() {
+
+            window.location.href =
+                "teacher.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>

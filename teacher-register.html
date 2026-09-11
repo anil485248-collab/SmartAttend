@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Teacher Registration</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #020617,
+                #0f172a,
+                #172554
+            );
+            color: white;
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            margin: auto;
+            background: rgba(15, 23, 42, 0.97);
+            border: 1px solid #2563eb;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 35px rgba(37, 99, 235, 0.25);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #93c5fd;
+            font-size: 19px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+        }
+
+        select option {
+            background: #0f172a;
+            color: white;
+        }
+
+        .info {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 13px;
+            margin-bottom: 20px;
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .password-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-box input {
+            padding-right: 50px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 12px;
+            top: 11px;
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .show-password:hover {
+            color: #60a5fa;
+        }
+
+        .error {
+            display: none;
+            background: rgba(127, 29, 29, 0.25);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .success {
+            display: none;
+            background: rgba(22, 101, 52, 0.25);
+            border: 1px solid #22c55e;
+            color: #86efac;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .register-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .register-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+
+        .back-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            background: transparent;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #1e293b;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 22px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        SmartAttend
+    </div>
+
+    <div class="subtitle">
+        Teacher Registration
+    </div>
+
+    <div class="info">
+        Select your category and program.
+        Each program has its own Admin Access Code.
+        Your teacher access will be restricted
+        to the selected program.
+    </div>
+
+    <h2>
+        👨‍🏫 Personal Information
+    </h2>
+
+    <label>
+        Teacher Name
+    </label>
+
+    <input
+        type="text"
+        id="teacherName"
+        placeholder="Enter teacher name"
+    >
+
+    <label>
+        Mobile Number
+    </label>
+
+    <input
+        type="tel"
+        id="mobile"
+        maxlength="10"
+        placeholder="Enter 10-digit mobile number"
+    >
+
+    <h2>
+        🎓 Academic Information
+    </h2>
+
+    <label>
+        Course Category
+    </label>
+
+    <select
+        id="category"
+        onchange="loadPrograms()"
+    >
+
+        <option value="">
+            Select Category
+        </option>
+
+        <option value="Technical">
+            Technical
+        </option>
+
+        <option value="Medical">
+            Medical / Pharmacy
+        </option>
+
+        <option value="Non-Technical">
+            Non-Technical
+        </option>
+
+    </select>
+
+    <label>
+        Program
+    </label>
+
+    <select
+        id="program"
+        onchange="showProgramInfo()"
+    >
+
+        <option value="">
+            Select Program
+        </option>
+
+    </select>
+
+    <div
+        id="programInfo"
+        class="info"
+        style="display:none;"
+    >
+    </div>
+
+    <h2>
+        🔐 Account Security
+    </h2>
+
+    <label>
+        Admin Access Code
+    </label>
+
+    <input
+        type="password"
+        id="accessCode"
+        placeholder="Enter Admin Access Code"
+    >
+
+    <label>
+        Create Password
+    </label>
+
+    <div class="password-box">
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Create your login password"
+        >
+
+        <button
+            type="button"
+            class="show-password"
+            onclick="togglePassword('password', this)"
+        >
+            👁️
+        </button>
+
+    </div>
+
+    <label>
+        Confirm Password
+    </label>
+
+    <div class="password-box">
+
+        <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm your login password"
+        >
+
+        <button
+            type="button"
+            class="show-password"
+            onclick="togglePassword('confirmPassword', this)"
+        >
+            👁️
+        </button>
+
+    </div>
+
+    <div
+        id="errorBox"
+        class="error"
+    >
+    </div>
+
+    <button
+        type="button"
+        id="registerButton"
+        class="register-btn"
+        onclick="registerTeacher()"
+    >
+        Create Teacher Account
+    </button>
+
+    <button
+        type="button"
+        class="back-btn"
+        onclick="goBack()"
+    >
+        ← Back to Teacher Portal
+    </button>
+
+    <div
+        id="successBox"
+        class="success"
+    >
+    </div>
+
+</div>
+
+<script>
+
+/* ============================================
+   PROGRAMS
+============================================ */
+
+const programs = {
+
+    "Technical": [
+        "B.Tech",
+        "M.Tech",
+        "Polytechnic / Diploma",
+        "B.S.",
+        "Agriculture"
+    ],
+
+    "Medical": [
+        "B.Pharmacy",
+        "D.Pharmacy",
+        "Nursing",
+        "Ayurveda"
+    ],
+
+    "Non-Technical": [
+        "B.A.",
+        "B.Sc.",
+        "B.Com."
+    ]
+
+};
+
+
+/* ============================================
+   LOAD PROGRAMS
+============================================ */
+
+function loadPrograms() {
+
+    const category =
+        document.getElementById("category").value;
+
+    const program =
+        document.getElementById("program");
+
+    const programInfo =
+        document.getElementById("programInfo");
+
+    program.innerHTML = "";
+
+    programInfo.style.display = "none";
+
+    const firstOption =
+        document.createElement("option");
+
+    firstOption.value = "";
+
+    firstOption.textContent = "Select Program";
+
+    program.appendChild(firstOption);
+
+    if (!programs[category]) {
+        return;
+    }
+
+    programs[category].forEach(function(item) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = item;
+
+        option.textContent = item;
+
+        program.appendChild(option);
+
+    });
+
+}
+
+
+/* ============================================
+   PROGRAM INFORMATION
+============================================ */
+
+function showProgramInfo() {
+
+    const program =
+        document.getElementById("program").value;
+
+    const programInfo =
+        document.getElementById("programInfo");
+
+    if (program === "") {
+
+        programInfo.style.display = "none";
+
+        return;
+    }
+
+    programInfo.style.display = "block";
+
+    programInfo.textContent =
+        "Admin Access Code required for " +
+        program +
+        " registration.";
+
+}
+
+
+/* ============================================
+   SHOW / HIDE PASSWORD
+============================================ */
+
+function togglePassword(fieldId, button) {
+
+    const field =
+        document.getElementById(fieldId);
+
+    if (field.type === "password") {
+
+        field.type = "text";
+
+        button.textContent = "🙈";
+
+    } else {
+
+        field.type = "password";
+
+        button.textContent = "👁️";
+
+    }
+
+}
+
+
+/* ============================================
+   ERROR MESSAGE
+============================================ */
+
+function showError(message) {
+
+    const errorBox =
+        document.getElementById("errorBox");
+
+    errorBox.textContent =
+        "⚠️ " + message;
+
+    errorBox.style.display = "block";
+
+    errorBox.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+}
+
+
+/* ============================================
+   HIDE ERROR
+============================================ */
+
+function hideError() {
+
+    const errorBox =
+        document.getElementById("errorBox");
+
+    errorBox.style.display = "none";
+
+}
+
+
+/* ============================================
+   REGISTER TEACHER
+============================================ */
+
+async function registerTeacher() {
+
+    hideError();
+
+    const name =
+        document.getElementById("teacherName")
+        .value
+        .trim();
+
+    const mobile =
+        document.getElementById("mobile")
+        .value
+        .trim();
+
+    const category =
+        document.getElementById("category")
+        .value;
+
+    const program =
+        document.getElementById("program")
+        .value;
+
+    const accessCode =
+        document.getElementById("accessCode")
+        .value
+        .trim();
+
+    const password =
+        document.getElementById("password")
+        .value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword")
+        .value;
+
+    const registerButton =
+        document.getElementById("registerButton");
+
+    const successBox =
+        document.getElementById("successBox");
+
+
+    /* REQUIRED FIELDS */
+
+    if (
+        name === "" ||
+        mobile === "" ||
+        category === "" ||
+        program === "" ||
+        accessCode === "" ||
+        password === "" ||
+        confirmPassword === ""
+    ) {
+
+        showError("Please fill all fields.");
+
+        return;
+    }
+
+
+    /* MOBILE */
+
+    if (!/^[0-9]{10}$/.test(mobile)) {
+
+        showError(
+            "Please enter a valid 10-digit mobile number."
+        );
+
+        return;
+    }
+
+
+    /* PASSWORD */
+
+    if (password.length < 6) {
+
+        showError(
+            "Password must contain at least 6 characters."
+        );
+
+        return;
+    }
+
+
+    /* CONFIRM PASSWORD */
+
+    if (password !== confirmPassword) {
+
+        showError(
+            "Passwords do not match."
+        );
+
+        return;
+    }
+
+
+    /* SHOW LOADING */
+
+    registerButton.disabled = true;
+
+    registerButton.textContent =
+        "Creating Account...";
+
+
+    try {
+
+        /* SEND DATA TO FLASK BACKEND */
+
+        const response = await fetch(
+            "/api/teachers/register",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    name: name,
+
+                    mobile: mobile,
+
+                    category: category,
+
+                    program: program,
+
+                    access_code: accessCode,
+
+                    password: password
+
+                })
+
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        /* BACKEND ERROR */
+
+        if (!response.ok || !result.success) {
+
+            showError(
+                result.message ||
+                "Teacher registration failed."
+            );
+
+            return;
+        }
+
+
+        /* SUCCESS */
+
+        successBox.innerHTML =
+
+            "<strong>✅ Teacher Registration Successful!</strong>" +
+
+            "<br><br>" +
+
+            "<strong>Teacher ID:</strong> " +
+            result.teacher_id +
+
+            "<br>" +
+
+            "<strong>Teacher Name:</strong> " +
+            result.name +
+
+            "<br>" +
+
+            "<strong>Program:</strong> " +
+            result.program +
+
+            "<br><br>" +
+
+            "Your account has been securely saved in the database." +
+
+            "<br><br>" +
+
+            "<strong>⚠️ Please save your Teacher ID.</strong>";
+
+        successBox.style.display = "block";
+
+        successBox.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+
+        /* DISABLE AFTER SUCCESS */
+
+        registerButton.disabled = true;
+
+        registerButton.textContent =
+            "Account Created ✓";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError(
+            "Cannot connect to SmartAttend server. " +
+            "Please make sure Flask backend is running."
+        );
+
+    } finally {
+
+        if (!successBox.style.display ||
+            successBox.style.display === "none") {
+
+            registerButton.disabled = false;
+
+            registerButton.textContent =
+                "Create Teacher Account";
+        }
+
+    }
+
+}
+
+
+/* ============================================
+   BACK
+============================================ */
+
+function goBack() {
+
+    window.location.href =
+        "teacher.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

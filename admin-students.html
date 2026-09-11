@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Students</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #0f172a, #172554);
+            color: white;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #60a5fa;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #94a3b8;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 250px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+            outline: none;
+        }
+
+        .search:focus {
+            border-color: #3b82f6;
+        }
+
+        .back-btn {
+            padding: 13px 20px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            background: #1e293b;
+            color: white;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #334155;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #334155;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.15);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th {
+            background: #1e3a8a;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 14px 15px;
+            border-bottom: 1px solid #334155;
+            color: #cbd5e1;
+        }
+
+        tr:hover td {
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        .student-id {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .attendance {
+            font-weight: bold;
+        }
+
+        .good {
+            color: #4ade80;
+        }
+
+        .warning {
+            color: #facc15;
+        }
+
+        .danger {
+            color: #f87171;
+        }
+
+        .status-message {
+            padding: 30px;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .count {
+            margin-bottom: 15px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>👑 Registered Students</h1>
+        <p>Admin Control Center → View all registered students</p>
+    </div>
+
+    <div class="top-bar">
+
+        <input
+            type="text"
+            id="searchInput"
+            class="search"
+            placeholder="Search by name, Student ID, enrollment, branch..."
+            oninput="filterStudents()"
+        >
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+            ← Back to Admin Dashboard
+        </button>
+
+    </div>
+
+    <div class="count" id="studentCount">
+        Loading students...
+    </div>
+
+    <div class="card">
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Enrollment</th>
+                        <th>Program</th>
+                        <th>Branch</th>
+                        <th>Semester</th>
+                        <th>Mobile</th>
+                        <th>Attendance</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentTable">
+
+                    <tr>
+                        <td colspan="8" class="status-message">
+                            Loading students...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let students = [];
+
+
+/* =========================================
+   LOAD STUDENTS FROM BACKEND
+========================================= */
+
+async function loadStudents() {
+
+    const table =
+        document.getElementById("studentTable");
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/students"
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load students."
+            );
+
+        }
+
+        students = data.students || [];
+
+        displayStudents(students);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="8" class="status-message">
+                    ❌ Unable to load students from backend.
+                </td>
+            </tr>
+        `;
+
+        document.getElementById(
+            "studentCount"
+        ).textContent =
+            "Unable to load students.";
+
+    }
+
+}
+
+
+/* =========================================
+   DISPLAY STUDENTS
+========================================= */
+
+function displayStudents(list) {
+
+    const table =
+        document.getElementById(
+            "studentTable"
+        );
+
+    const count =
+        document.getElementById(
+            "studentCount"
+        );
+
+
+    count.textContent =
+        "Total Students: " + list.length;
+
+
+    if (list.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="9" class="status-message">
+                    No students found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    table.innerHTML = "";
+
+
+    list.forEach(student => {
+
+        const row =
+            document.createElement("tr");
+
+
+        let attendance =
+            Number(
+                student.attendance_percentage || 0
+            );
+
+
+        let attendanceClass =
+            "danger";
+
+
+        if (attendance >= 75) {
+
+            attendanceClass =
+                "good";
+
+        }
+
+        else if (attendance >= 60) {
+
+            attendanceClass =
+                "warning";
+
+        }
+
+
+        row.innerHTML = `
+
+            <td class="student-id">
+                ${escapeHtml(student.student_id)}
+            </td>
+
+            <td>
+                ${escapeHtml(student.name)}
+            </td>
+
+            <td>
+                ${escapeHtml(student.enrollment)}
+            </td>
+
+            <td>
+                ${escapeHtml(student.program)}
+            </td>
+
+            <td>
+                ${escapeHtml(student.branch || "N/A")}
+            </td>
+
+            <td>
+                ${escapeHtml(student.semester || "N/A")}
+            </td>
+
+            <td>
+                ${escapeHtml(student.mobile)}
+            </td>
+
+            <td class="attendance ${attendanceClass}">
+                ${attendance}%
+            <td>
+                <button
+                    onclick="deleteStudent('${escapeHtml(student.student_id)}')"
+                    style="background:#dc2626;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">
+                    Delete
+                </button>
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+}
+
+async function deleteStudent(studentId) {
+
+    const confirmDelete = confirm(
+        "Are you sure you want to delete student " +
+        studentId +
+        "?\n\nThis will also delete the student's attendance records."
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/admin/students/${encodeURIComponent(studentId)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            alert(data.message);
+
+            // Refresh student list
+            loadStudents();
+
+        } else {
+
+            alert(data.message || "Unable to delete student.");
+
+        }
+
+    } catch (error) {
+
+        console.error("Delete student error:", error);
+
+        alert("Server error. Unable to delete student.");
+
+    }
+}
+
+/* =========================================
+   SEARCH STUDENTS
+========================================= */
+
+function filterStudents() {
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+    if (!search) {
+
+        displayStudents(students);
+
+        return;
+
+    }
+
+
+    const filtered =
+        students.filter(student => {
+
+            return (
+
+                String(
+                    student.student_id || ""
+                ).toLowerCase().includes(search)
+
+                ||
+
+                String(
+                    student.name || ""
+                ).toLowerCase().includes(search)
+
+                ||
+
+                String(
+                    student.enrollment || ""
+                ).toLowerCase().includes(search)
+
+                ||
+
+                String(
+                    student.program || ""
+                ).toLowerCase().includes(search)
+
+                ||
+
+                String(
+                    student.branch || ""
+                ).toLowerCase().includes(search)
+
+                ||
+
+                String(
+                    student.semester || ""
+                ).toLowerCase().includes(search)
+
+            );
+
+        });
+
+
+    displayStudents(filtered);
+
+}
+
+
+/* =========================================
+   BASIC HTML SAFETY
+========================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================
+   BACK
+========================================= */
+
+function goBack() {
+
+    window.location.href =
+        "admin-dashboard.html";
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+loadStudents();
+
+</script>
+
+</body>
+</html>

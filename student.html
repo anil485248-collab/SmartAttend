@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Portal - SmartAttend</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(33, 150, 243, 0.15), transparent 30%),
+                radial-gradient(circle at 80% 80%, rgba(0, 100, 255, 0.12), transparent 30%),
+                #050b18;
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #9caec9;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 320px;
+            padding: 35px 25px;
+
+            background: rgba(16, 29, 52, 0.85);
+
+            border: 1px solid rgba(33, 150, 243, 0.25);
+
+            border-radius: 20px;
+
+            transition: 0.3s;
+
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+            border-color: #2196f3;
+            box-shadow: 0 15px 45px rgba(33, 150, 243, 0.18);
+        }
+
+        .icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #91a3bf;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #1479e9;
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #0d5fbd;
+            transform: scale(1.02);
+        }
+
+        .back {
+            margin-top: 35px;
+            background: transparent;
+            border: 1px solid #304563;
+            color: #9db1cf;
+            width: 160px;
+        }
+
+        .back:hover {
+            background: #101d34;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="logo">
+            SmartAttend
+        </div>
+
+        <div class="title">
+            Student Portal
+        </div>
+
+        <div class="subtitle">
+            Manage your attendance with SmartAttend
+        </div>
+
+
+        <div class="cards">
+
+            <!-- Existing Student -->
+
+            <div class="card">
+
+                <div class="icon">
+                    🔐
+                </div>
+
+                <h2>
+                    Existing Student
+                </h2>
+
+                <p>
+                    Already have a SmartAttend account?
+                    Login using your Student ID and password.
+                </p>
+
+                <button onclick="existingStudent()">
+                    Student Login
+                </button>
+
+            </div>
+
+
+            <!-- New Student -->
+
+            <div class="card">
+
+                <div class="icon">
+                    🎓
+                </div>
+
+                <h2>
+                    New Student
+                </h2>
+
+                <p>
+                    First time here?
+                    Create your SmartAttend student account.
+                </p>
+
+                <button onclick="newStudent()">
+                    Create Account
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <button class="back" onclick="goBack()">
+            ← Back
+        </button>
+
+    </div>
+
+
+    <script>
+
+        function existingStudent() {
+
+    window.location.href = "https://localhost:5000/student-login.html";
+}
+
+        function newStudent() {
+
+    window.location.href = "https://localhost:5000/student-register.html";
+
+}
+
+
+        function goBack() {
+
+            window.location.href = "index.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>

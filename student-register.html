@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Registration - SmartAttend</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(33,150,243,.18),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(0,110,255,.15),
+                    transparent 30%
+                ),
+
+                #050b18;
+
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 780px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 38px;
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #91a3bf;
+            font-size: 14px;
+        }
+
+        .form-box {
+            background: rgba(15,28,50,.94);
+            border: 1px solid rgba(33,150,243,.25);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.4);
+        }
+
+        .section-title {
+            color: #2196f3;
+            font-size: 18px;
+            margin: 10px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #243852;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            color: #c5d2e6;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 10px;
+            border: 1px solid #304563;
+            background: #091426;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 0 3px rgba(33,150,243,.1);
+        }
+
+        select option {
+            background: #091426;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            padding: 13px;
+            border-radius: 10px;
+            background: rgba(33,150,243,.08);
+            border: 1px solid rgba(33,150,243,.18);
+            color: #8faed3;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .password-note {
+            color: #71839e;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 10px;
+            background: #1479e9;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            transition: .2s;
+        }
+
+        .create-btn:hover {
+            background: #0d5fbd;
+            transform: translateY(-1px);
+        }
+
+        .create-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 10px;
+            border: 1px solid #304563;
+            background: transparent;
+            color: #9db1cf;
+        }
+
+        .back-btn:hover {
+            background: #101d34;
+        }
+
+        .success-box {
+            display: none;
+
+            margin-top: 20px;
+            padding: 18px;
+
+            border-radius: 12px;
+
+            background: rgba(22,101,52,.20);
+
+            border: 1px solid #22c55e;
+
+            color: #86efac;
+
+            line-height: 1.7;
+        }
+
+        .error-box {
+            display: none;
+
+            margin-top: 20px;
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: rgba(127,29,29,.20);
+
+            border: 1px solid #ef4444;
+
+            color: #fca5a5;
+
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+            .form-box {
+                padding: 25px 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <div class="header">
+
+        <div class="logo">
+            SmartAttend
+        </div>
+
+        <div class="title">
+            Student Registration
+        </div>
+
+        <div class="subtitle">
+            Create your SmartAttend account
+        </div>
+
+    </div>
+
+
+    <div class="form-box">
+
+
+        <!-- PERSONAL INFORMATION -->
+
+        <div class="section-title">
+            Personal Information
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="input-group full">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="mobile">
+                    Mobile Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="mobile"
+                    maxlength="10"
+                    placeholder="Enter 10-digit mobile number"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="enrollment">
+                    Enrollment Number
+                </label>
+
+                <input
+                    type="text"
+                    id="enrollment"
+                    placeholder="Enter enrollment number"
+                >
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ACADEMIC INFORMATION -->
+
+        <div class="section-title">
+            Academic Information
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <!-- CATEGORY -->
+
+            <div class="input-group full">
+
+                <label for="category">
+                    Academic Category
+                </label>
+
+                <select
+                    id="category"
+                    onchange="loadPrograms()"
+                >
+
+                    <option value="">
+                        Select Category
+                    </option>
+
+                    <option value="technical">
+                        Technical
+                    </option>
+
+                    <option value="medical">
+                        Medical / Professional
+                    </option>
+
+                    <option value="nontechnical">
+                        Non-Technical
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- PROGRAM -->
+
+            <div class="input-group full">
+
+                <label for="program">
+                    Program
+                </label>
+
+                <select
+                    id="program"
+                    onchange="loadProgramDetails()"
+                    disabled
+                >
+
+                    <option value="">
+                        Select Category First
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- BRANCH -->
+
+            <div
+                class="input-group full hidden"
+                id="branchBox"
+            >
+
+                <label for="branch">
+                    Branch / Department
+                </label>
+
+                <select id="branch">
+
+                    <option value="">
+                        Select Branch / Department
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- SEMESTER -->
+
+            <div
+                class="input-group full"
+                id="semesterBox"
+            >
+
+                <label for="semester">
+                    Semester
+                </label>
+
+                <select
+                    id="semester"
+                    disabled
+                >
+
+                    <option value="">
+                        Select Program First
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div
+            class="info-box"
+            id="academicInfo"
+        >
+
+            Select your category and program.
+            Academic options will appear automatically.
+
+        </div>
+
+
+
+        <!-- PASSWORD -->
+
+        <div class="section-title">
+            Account Security
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="input-group">
+
+                <label for="password">
+                    Create Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Create password"
+                >
+
+                <div class="password-note">
+                    Minimum 8 characters.
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm password"
+                >
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ERROR -->
+
+        <div
+            class="error-box"
+            id="errorBox"
+        ></div>
+
+
+
+        <!-- SUCCESS -->
+
+        <div
+            class="success-box"
+            id="successBox"
+        ></div>
+
+
+
+        <button
+            class="create-btn"
+            id="createBtn"
+            onclick="createAccount()"
+        >
+
+            Create Student Account
+
+        </button>
+
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+
+            ← Back to Student Portal
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   BACKEND URL
+===================================================== */
+
+const API_URL =
+    "";
+
+
+/* =====================================================
+   ACADEMIC DATA
+===================================================== */
+
+const academicData = {
+
+    technical: {
+
+        "B.Tech": {
+
+            semesters: 8,
+
+            branches: [
+                "Agricultural",
+                "CSE",
+                "CSE (AI & ML)",
+                "ECE",
+                "EEE",
+                "Mechanical Engineering",
+                "Civil Engineering",
+                "Other"
+            ]
+
+        },
+
+
+        "M.Tech": {
+
+            semesters: 4,
+
+            branches: [
+                "Computer Science",
+                "AI & ML",
+                "ECE",
+                "Mechanical Engineering",
+                "Civil Engineering",
+                "Other"
+            ]
+
+        },
+
+
+        "Polytechnic / Diploma": {
+
+            semesters: 6,
+
+            branches: [
+                "Computer Engineering",
+                "Electrical Engineering",
+                "Mechanical Engineering",
+                "Civil Engineering",
+                "Electronics Engineering",
+                "Other"
+            ]
+
+        },
+
+
+        "B.S.": {
+
+            semesters: 6,
+
+            branches: []
+
+        },
+
+
+        "Agriculture": {
+
+            semesters: 8,
+
+            branches: [
+                "Agriculture",
+                "Agricultural Engineering",
+                "Other"
+            ]
+
+        }
+
+    },
+
+
+    medical: {
+
+        "B.Pharmacy": {
+
+            semesters: 8,
+
+            branches: []
+
+        },
+
+
+        "D.Pharmacy": {
+
+            semesters: 0,
+
+            branches: [],
+
+            years: 2
+
+        },
+
+
+        "Nursing": {
+
+            semesters: 8,
+
+            branches: []
+
+        },
+
+
+        "Ayurveda": {
+
+            semesters: 0,
+
+            branches: [],
+
+            note:
+                "Academic structure can vary by program/institution."
+
+        }
+
+    },
+
+
+    nontechnical: {
+
+        "B.A.": {
+
+            semesters: 6,
+
+            branches: []
+
+        },
+
+
+        "B.Sc.": {
+
+            semesters: 6,
+
+            branches: []
+
+        },
+
+
+        "B.Com.": {
+
+            semesters: 6,
+
+            branches: []
+
+        }
+
+    }
+
+};
+
+
+
+/* =====================================================
+   CATEGORY → PROGRAM
+===================================================== */
+
+function loadPrograms() {
+
+    const category =
+        document.getElementById("category").value;
+
+    const program =
+        document.getElementById("program");
+
+    const branchBox =
+        document.getElementById("branchBox");
+
+    const semester =
+        document.getElementById("semester");
+
+
+    program.innerHTML =
+        '<option value="">Select Program</option>';
+
+    semester.innerHTML =
+        '<option value="">Select Program First</option>';
+
+
+    program.disabled = true;
+
+    semester.disabled = true;
+
+    branchBox.classList.add("hidden");
+
+
+    if (category === "") {
+
+        return;
+
+    }
+
+
+    const programList =
+        academicData[category];
+
+
+    Object.keys(programList).forEach(function(name) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = name;
+
+        option.textContent = name;
+
+        program.appendChild(option);
+
+    });
+
+
+    program.disabled = false;
+
+}
+
+
+
+/* =====================================================
+   PROGRAM → BRANCH + SEMESTER
+===================================================== */
+
+function loadProgramDetails() {
+
+    const category =
+        document.getElementById("category").value;
+
+    const selectedProgram =
+        document.getElementById("program").value;
+
+    const branchBox =
+        document.getElementById("branchBox");
+
+    const branch =
+        document.getElementById("branch");
+
+    const semester =
+        document.getElementById("semester");
+
+    const info =
+        document.getElementById("academicInfo");
+
+
+    branchBox.classList.add("hidden");
+
+
+    branch.innerHTML =
+        '<option value="">Select Branch / Department</option>';
+
+
+    semester.innerHTML =
+        '<option value="">Select Semester</option>';
+
+
+    semester.disabled = true;
+
+
+    if (
+        category === "" ||
+        selectedProgram === ""
+    ) {
+
+        return;
+
+    }
+
+
+    const data =
+        academicData[category][selectedProgram];
+
+
+    /* ==============================
+       BRANCH
+    ============================== */
+
+    if (data.branches.length > 0) {
+
+        data.branches.forEach(function(branchName) {
+
+            const option =
+                document.createElement("option");
+
+            option.value = branchName;
+
+            option.textContent = branchName;
+
+            branch.appendChild(option);
+
+        });
+
+
+        branchBox.classList.remove("hidden");
+
+    }
+
+
+
+    /* ==============================
+       SEMESTERS
+    ============================== */
+
+    if (data.semesters > 0) {
+
+        for (
+            let i = 1;
+            i <= data.semesters;
+            i++
+        ) {
+
+            const option =
+                document.createElement("option");
+
+            option.value = i;
+
+            option.textContent =
+                i + getOrdinal(i) + " Semester";
+
+            semester.appendChild(option);
+
+        }
+
+
+        semester.disabled = false;
+
+
+        info.textContent =
+            selectedProgram +
+            " — Select your current semester.";
+
+    }
+
+
+
+    /* ==============================
+       D.PHARMACY
+    ============================== */
+
+    else if (
+        selectedProgram === "D.Pharmacy"
+    ) {
+
+        semester.innerHTML =
+
+            '<option value="">Select Academic Year</option>' +
+
+            '<option value="1">1st Year</option>' +
+
+            '<option value="2">2nd Year</option>';
+
+
+        semester.disabled = false;
+
+
+        info.textContent =
+            "D.Pharmacy is shown by academic year in this prototype.";
+
+    }
+
+
+
+    /* ==============================
+       AYURVEDA
+    ============================== */
+
+    else {
+
+        semester.innerHTML =
+
+            '<option value="">Academic structure configured by college</option>';
+
+
+        info.textContent =
+
+            data.note ||
+            "Academic structure can be configured by the college.";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   ORDINAL
+===================================================== */
+
+function getOrdinal(number) {
+
+    if (number === 1) return "st";
+
+    if (number === 2) return "nd";
+
+    if (number === 3) return "rd";
+
+    return "th";
+
+}
+
+
+
+/* =====================================================
+   SHOW ERROR
+===================================================== */
+
+function showError(message) {
+
+    const errorBox =
+        document.getElementById("errorBox");
+
+
+    errorBox.textContent =
+        "⚠️ " + message;
+
+
+    errorBox.style.display =
+        "block";
+
+
+    errorBox.scrollIntoView({
+
+        behavior: "smooth",
+
+        block: "center"
+
+    });
+
+}
+
+
+
+/* =====================================================
+   HIDE ERROR
+===================================================== */
+
+function hideMessages() {
+
+    document.getElementById(
+        "errorBox"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "successBox"
+    ).style.display = "none";
+
+}
+
+
+
+/* =====================================================
+   CREATE ACCOUNT
+===================================================== */
+
+async function createAccount() {
+
+    hideMessages();
+
+
+    const name =
+        document.getElementById("name").value.trim();
+
+
+    const mobile =
+        document.getElementById("mobile").value.trim();
+
+
+    const enrollment =
+        document.getElementById("enrollment").value.trim();
+
+
+    const category =
+        document.getElementById("category").value;
+
+
+    const program =
+        document.getElementById("program").value;
+
+
+    const branch =
+        document.getElementById("branch").value;
+
+
+    const semester =
+        document.getElementById("semester").value;
+
+
+    const password =
+        document.getElementById("password").value;
+
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+    /* =================================================
+       REQUIRED FIELDS
+    ================================================= */
+
+    if (
+        name === "" ||
+        mobile === "" ||
+        enrollment === "" ||
+        category === "" ||
+        program === "" ||
+        password === "" ||
+        confirmPassword === ""
+    ) {
+
+        showError(
+            "Please fill all required fields."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =================================================
+       BRANCH
+    ================================================= */
+
+    const programData =
+        academicData[category][program];
+
+
+    if (
+        programData.branches.length > 0 &&
+        branch === ""
+    ) {
+
+        showError(
+            "Please select your Branch / Department."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =================================================
+       SEMESTER
+    ================================================= */
+
+    if (
+        program !== "Ayurveda" &&
+        semester === ""
+    ) {
+
+        showError(
+            "Please select your academic level."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =================================================
+       MOBILE
+    ================================================= */
+
+    if (
+        !/^[0-9]{10}$/.test(mobile)
+    ) {
+
+        showError(
+            "Please enter a valid 10-digit mobile number."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =================================================
+       PASSWORD
+    ================================================= */
+
+    if (
+        password.length < 8
+    ) {
+
+        showError(
+            "Password must contain at least 8 characters."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =================================================
+       CONFIRM PASSWORD
+    ================================================= */
+
+    if (
+        password !== confirmPassword
+    ) {
+
+        showError(
+            "Passwords do not match."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =================================================
+       DISABLE BUTTON
+    ================================================= */
+
+    const createBtn =
+        document.getElementById("createBtn");
+
+
+    createBtn.disabled = true;
+
+    createBtn.textContent =
+        "Creating Account...";
+
+
+
+    /* =================================================
+       SEND DATA TO FLASK
+    ================================================= */
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL +
+                "/api/students/register",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        name: name,
+
+                        mobile: mobile,
+
+                        enrollment: enrollment,
+
+                        category: category,
+
+                        program: program,
+
+                        branch: branch,
+
+                        semester: semester,
+
+                        password: password
+
+                    })
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+
+        /* =================================================
+           BACKEND ERROR
+        ================================================= */
+
+        if (!response.ok) {
+
+            showError(
+                result.message ||
+                "Registration failed."
+            );
+
+            return;
+
+        }
+
+
+
+        /* =================================================
+           SUCCESS
+        ================================================= */
+
+        const successBox =
+            document.getElementById(
+                "successBox"
+            );
+
+
+        successBox.innerHTML =
+
+            "<strong>✅ Student Registration Successful!</strong>" +
+
+            "<br><br>" +
+
+            "<strong>Student ID:</strong> " +
+            result.student_id +
+
+            "<br>" +
+
+            "<strong>Name:</strong> " +
+            result.name +
+
+            "<br>" +
+
+            "<strong>Program:</strong> " +
+            result.program +
+
+            "<br>" +
+
+            "<strong>Branch:</strong> " +
+            (result.branch || "Not Applicable") +
+
+            "<br>" +
+
+            "<strong>Academic Level:</strong> " +
+            (result.semester || "Configured by College") +
+
+            "<br><br>" +
+
+            "Your account has been securely saved in the database." +
+
+            "<br><br>" +
+
+            "⚠️ Please save your Student ID for login.";
+
+
+        successBox.style.display =
+            "block";
+
+
+        successBox.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "center"
+
+        });
+
+
+        /* Clear password fields */
+
+        document.getElementById(
+            "password"
+        ).value = "";
+
+
+        document.getElementById(
+            "confirmPassword"
+        ).value = "";
+
+
+    }
+
+    catch (error) {
+
+        showError(
+            "Cannot connect to SmartAttend server. " +
+            "Please make sure Flask is running."
+        );
+
+    }
+
+    finally {
+
+        createBtn.disabled = false;
+
+        createBtn.textContent =
+            "Create Student Account";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+function goBack() {
+
+    window.location.href =
+        "student.html";
+
+}
+
+</script>
+
+
+</body>
+
+</html>

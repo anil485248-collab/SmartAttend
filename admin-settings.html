@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAttend - Attendance Settings</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #071426;
+            color: white;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #5eb8ff;
+        }
+
+        .subtitle {
+            color: #b8c7d9;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #10243d;
+            border: 1px solid #315b82;
+            border-radius: 18px;
+            padding: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #47749d;
+            background: #071426;
+            color: white;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            background: #36a8ff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background: #168fe8;
+        }
+
+        .back {
+            background: transparent;
+            border: 1px solid #47749d;
+        }
+
+        .info {
+            margin-top: 25px;
+            padding: 15px;
+            background: #0b1d32;
+            border-radius: 10px;
+            color: #b8c7d9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>⚙️ Attendance Settings</h1>
+
+        <div class="subtitle">
+            Admin Control Center → Configure automatic attendance rules
+        </div>
+
+        <div class="card">
+
+            <h2>SmartAttend Attendance Rules</h2>
+
+            <label>
+                Geofence Radius (meters)
+            </label>
+
+            <input
+                type="number"
+                id="radius"
+                value="50"
+                min="10"
+            >
+
+            <label>
+                Required Presence Time (minutes)
+            </label>
+
+            <input
+                type="number"
+                id="requiredTime"
+                value="60"
+                min="1"
+            >
+
+            <label>
+                Maximum GPS Accuracy (meters)
+            </label>
+
+            <input
+                type="number"
+                id="accuracy"
+                value="30"
+                min="1"
+            >
+
+            <div class="info">
+                📍 Student must remain inside the college
+                geofence continuously for the required time
+                before attendance can be marked Present.
+            </div>
+
+            <button onclick="saveSettings()">
+                💾 Save Attendance Settings
+            </button>
+
+            <button
+                class="back"
+                onclick="window.location.href='admin-dashboard.html'">
+                ← Back to Admin Dashboard
+            </button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function saveSettings() {
+
+            const radius =
+                document.getElementById("radius").value;
+
+            const requiredTime =
+                document.getElementById("requiredTime").value;
+
+            const accuracy =
+                document.getElementById("accuracy").value;
+
+            if (!radius || !requiredTime || !accuracy) {
+
+                alert("Please fill all settings.");
+                return;
+            }
+
+            localStorage.setItem(
+                "attendanceSettings",
+                JSON.stringify({
+                    radius: Number(radius),
+                    requiredTime: Number(requiredTime),
+                    accuracy: Number(accuracy)
+                })
+            );
+
+            alert(
+                "Attendance settings saved successfully."
+            );
+        }
+
+    </script>
+
+</body>
+
+</html>

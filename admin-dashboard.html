@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>SmartAttend - Admin Dashboard</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(33,150,243,.18),
+            transparent 30%
+        ),
+
+        radial-gradient(
+            circle at 90% 90%,
+            rgba(0,110,255,.15),
+            transparent 30%
+        ),
+
+        #050b18;
+
+    color: white;
+}
+
+header {
+
+    background: rgba(15,28,50,.95);
+
+    border-bottom:
+        1px solid rgba(33,150,243,.4);
+
+    padding: 18px 30px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.logo {
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    color: #2196f3;
+}
+
+.admin-name {
+
+    color: #93c5fd;
+
+    margin-right: 15px;
+}
+
+.logout-btn {
+
+    padding: 9px 16px;
+
+    border-radius: 8px;
+
+    border: 1px solid #304563;
+
+    background: transparent;
+
+    color: #c5d2e6;
+
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+
+    background: #101d34;
+}
+
+.container {
+
+    width: 100%;
+
+    max-width: 1150px;
+
+    margin: auto;
+
+    padding: 35px 20px;
+}
+
+.welcome {
+
+    margin-bottom: 30px;
+}
+
+.welcome h1 {
+
+    font-size: 30px;
+
+    margin-bottom: 8px;
+}
+
+.welcome p {
+
+    color: #91a3bf;
+
+    font-size: 14px;
+}
+
+.card-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+.card {
+
+    background:
+        rgba(15,28,50,.94);
+
+    border:
+        1px solid #243852;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    min-height: 150px;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.2);
+}
+
+.card:hover {
+
+    transform: translateY(-4px);
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 15px 35px rgba(37,99,235,.18);
+}
+
+.card-icon {
+
+    font-size: 32px;
+
+    margin-bottom: 15px;
+}
+
+.card h2 {
+
+    color: #93c5fd;
+
+    margin-bottom: 8px;
+}
+
+.card p {
+
+    color: #91a3bf;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+@media (max-width: 750px) {
+
+    header {
+
+        padding: 15px;
+    }
+
+    .container {
+
+        padding: 25px 12px;
+    }
+
+    .card-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .welcome h1 {
+
+        font-size: 24px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        SmartAttend Admin
+    </div>
+
+    <div>
+
+        <span
+            class="admin-name"
+            id="adminName">
+            Admin
+        </span>
+
+        <button
+            class="logout-btn"
+            onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <div class="welcome">
+
+        <h1>
+            👑 Admin Control Center
+        </h1>
+
+        <p>
+            Manage students, teachers, attendance
+            and SmartAttend system settings.
+        </p>
+
+    </div>
+
+
+    <div class="card-grid">
+
+
+        <div class="card"
+     onclick="openStudents()">
+
+            <div class="card-icon">
+                👨‍🎓
+            </div>
+
+            <h2>
+                Students
+            </h2>
+
+            <p>
+                View and manage registered students.
+            </p>
+
+        </div>
+
+
+       <div class="card" onclick="openTeachers()">
+
+    <div class="card-icon">
+        👨‍🏫
+    </div>
+
+    <h2>
+        Teachers
+    </h2>
+
+    <p>
+        View registered teachers and
+        their authorized programs.
+    </p>
+
+</div>
+
+
+        <div class="card" onclick="openAttendance()">
+
+            <div class="card-icon">
+                📊
+            </div>
+
+            <h2>
+                Attendance
+            </h2>
+
+            <p>
+                View attendance records and
+                attendance statistics.
+            </p>
+
+        </div>
+
+
+        <div class="card" onclick="openLocation()">
+
+            <div class="card-icon">
+                📍
+            </div>
+
+            <h2>
+                College Location
+            </h2>
+
+            <p>
+                Configure college building
+                GPS location and geofence.
+            </p>
+
+        </div>
+
+
+        <div class="card" onclick="openSettings()">
+
+            <div class="card-icon">
+                ⚙️
+            </div>
+
+            <h2>
+                Attendance Settings
+            </h2>
+
+            <p>
+                Configure radius, required time
+                and GPS accuracy rules.
+            </p>
+
+        </div>
+
+
+        <div class="card" onclick="openAuditLogs()">
+
+            <div class="card-icon">
+                📋
+            </div>
+
+            <h2>
+                Audit Logs
+            </h2>
+
+            <p>
+                View important administrative
+                actions and system changes.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const adminData =
+    sessionStorage.getItem("admin");
+
+if (!adminData) {
+
+    alert("Please login as Admin first.");
+
+    window.location.href =
+        "admin.html";
+
+} else {
+
+    try {
+
+        const admin =
+            JSON.parse(adminData);
+
+        document.getElementById(
+            "adminName"
+        ).textContent =
+            admin.name || "Admin";
+
+    } catch (error) {
+
+        sessionStorage.removeItem("admin");
+
+        window.location.href =
+            "admin.html";
+    }
+}
+
+
+function logout() {
+
+    sessionStorage.removeItem("admin");
+
+    window.location.href =
+        "admin.html";
+}
+
+function openStudents() {
+    window.location.href = "admin-students.html";
+}
+
+function openTeachers() {
+    window.location.href = "admin-teachers.html";
+}
+
+function openAttendance() {
+    window.location.href = "admin-attendance.html";
+}
+
+function openLocation() {
+    window.location.href = "admin-location.html";
+}
+
+function openSettings() {
+    window.location.href = "admin-settings.html";
+}
+
+function openAuditLogs() {
+    window.location.href = "admin-audit-logs.html";
+}
+
+</script>
+
+</body>
+
+</html>
