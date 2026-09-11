@@ -1380,9 +1380,6 @@ def teacher_page():
 def index_page():
     return send_from_directory(".", "index.html")
 
-@app.route("/admin.html")
-def admin_page():
-    return send_from_directory(".", "admin.html")
 
 # Teachers API
 
@@ -1717,9 +1714,6 @@ def get_teacher_students():
 @app.route("/admin.html")
 def admin_page():
     return send_from_directory(".", "admin.html")
-
-
-init_database()
 
 
 init_database()
