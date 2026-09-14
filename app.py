@@ -513,28 +513,17 @@ def register_student():
 
     data = request.get_json()
 
-
     if not data:
-
         return jsonify({
-
             "success": False,
-
             "message": "No registration data received."
-
         }), 400
 
-
     name = data.get("name", "").strip()
-
     mobile = data.get("mobile", "").strip()
-
     enrollment = data.get("enrollment", "").strip()
-
     category = data.get("category", "").strip()
-
     program = data.get("program", "").strip()
-
     branch = data.get("branch", "").strip()
 
     semester = str(
@@ -542,7 +531,6 @@ def register_student():
     ).strip()
 
     password = data.get("password", "")
-
 
     if not all([
         name,
@@ -552,42 +540,25 @@ def register_student():
         program,
         password
     ]):
-
         return jsonify({
-
             "success": False,
-
             "message": "Please fill all required fields."
-
         }), 400
-
 
     if not mobile.isdigit() or len(mobile) != 10:
-
         return jsonify({
-
             "success": False,
-
             "message": "Please enter a valid 10-digit mobile number."
-
         }), 400
-
 
     if len(password) < 8:
-
         return jsonify({
-
             "success": False,
-
             "message": "Password must contain at least 8 characters."
-
         }), 400
 
-
     connection = get_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute(
         "SELECT student_id FROM students WHERE mobile = %s",
@@ -596,19 +567,13 @@ def register_student():
 
     existing_mobile = cursor.fetchone()
 
-
     if existing_mobile:
-
         connection.close()
 
         return jsonify({
-
             "success": False,
-
             "message": "A student with this mobile number is already registered."
-
         }), 409
-
 
     cursor.execute(
         "SELECT student_id FROM students WHERE enrollment = %s",
@@ -617,31 +582,35 @@ def register_student():
 
     existing_enrollment = cursor.fetchone()
 
-
     if existing_enrollment:
-
         connection.close()
 
         return jsonify({
-
             "success": False,
-
             "message": "This enrollment number is already registered."
-
         }), 409
 
+    # Generate next unique Student ID
+    cursor.execute("""
+        SELECT COALESCE(
+            MAX(
+                CAST(
+                    SUBSTRING(student_id FROM 5) AS INTEGER
+                )
+            ),
+            0
+        ) AS last_number
+        FROM students
+        WHERE student_id ~ '^STU-[0-9]+$'
+    """)
 
-    cursor.execute(
-        "SELECT COUNT(*) AS total FROM students"
-    )
+    result = cursor.fetchone()
 
-    total_students = cursor.fetchone()["total"]
+    last_number = result["last_number"]
 
-    student_id = f"STU-{total_students + 1:06d}"
-
+    student_id = f"STU-{last_number + 1:06d}"
 
     password_hash = generate_password_hash(password)
-
 
     cursor.execute("""
         INSERT INTO students
@@ -658,7 +627,6 @@ def register_student():
         )
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """, (
-
         student_id,
         name,
         mobile,
@@ -668,32 +636,21 @@ def register_student():
         branch,
         semester,
         password_hash
-
     ))
 
-
     connection.commit()
-
     connection.close()
 
-
     return jsonify({
-
         "success": True,
-
         "message": "Student registered successfully.",
-
         "student_id": student_id,
-
         "name": name,
-
         "program": program,
-
         "branch": branch,
-
         "semester": semester
-
     }), 201
+
 
 
 # =========================================================
