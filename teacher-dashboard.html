@@ -617,7 +617,21 @@ function loadStudents() {
                     <td>${student.enrollment || "N/A"}</td>
                     <td>${student.program}</td>
                     <td>${student.semester}</td>
-                    <td>View Attendance</td>
+                    <td>
+    <button
+        onclick="viewAttendance('${student.student_id}', '${student.name}')"
+        style="
+            background:#2563eb;
+            color:white;
+            border:none;
+            padding:8px 14px;
+            border-radius:7px;
+            cursor:pointer;
+        "
+    >
+        View Attendance
+    </button>
+</td>
                 `;
 
                 table.appendChild(row);
@@ -636,6 +650,56 @@ function loadStudents() {
                 </tr>
             `;
         });
+}
+
+
+async function viewAttendance(studentId, studentName) {
+
+    try {
+
+        const response = await fetch(
+            `/api/teacher/student-attendance?student_id=${encodeURIComponent(studentId)}`
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message || "Unable to load attendance.");
+            return;
+        }
+
+        let message =
+            "Student: " + studentName +
+            "\nStudent ID: " + studentId +
+            "\n\n";
+
+        if (data.attendance.length === 0) {
+
+            message += "No attendance records found.";
+
+        } else {
+
+            data.attendance.forEach(record => {
+
+                message +=
+                    record.attendance_date +
+                    " — " +
+                    record.status +
+                    "\n";
+
+            });
+
+        }
+
+        alert(message);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Unable to load attendance from server.");
+
+    }
 }
 
 

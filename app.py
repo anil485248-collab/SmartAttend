@@ -358,30 +358,18 @@ def register_teacher():
 
     data = request.get_json()
 
-
     if not data:
-
         return jsonify({
-
             "success": False,
-
             "message": "No registration data received."
-
         }), 400
 
-
     name = data.get("name", "").strip()
-
     mobile = data.get("mobile", "").strip()
-
     category = data.get("category", "").strip()
-
     program = data.get("program", "").strip()
-
     access_code = data.get("access_code", "").strip()
-
     password = data.get("password", "")
-
 
     if not all([
         name,
@@ -391,42 +379,37 @@ def register_teacher():
         access_code,
         password
     ]):
-
         return jsonify({
-
             "success": False,
-
             "message": "Please fill all required fields."
-
         }), 400
-
 
     if program not in PROGRAM_CODES:
-
         return jsonify({
-
             "success": False,
-
             "message": "Invalid program selected."
-
         }), 400
 
-
     if PROGRAM_CODES[program] != access_code:
-
         return jsonify({
-
             "success": False,
-
             "message": "Invalid Admin Access Code for this program."
-
         }), 403
 
+    if not mobile.isdigit() or len(mobile) != 10:
+        return jsonify({
+            "success": False,
+            "message": "Please enter a valid 10-digit mobile number."
+        }), 400
+
+    if len(password) < 8:
+        return jsonify({
+            "success": False,
+            "message": "Password must contain at least 8 characters."
+        }), 400
 
     connection = get_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute(
         "SELECT teacher_id FROM teachers WHERE mobile = %s",
@@ -435,31 +418,35 @@ def register_teacher():
 
     existing_teacher = cursor.fetchone()
 
-
     if existing_teacher:
-
         connection.close()
 
         return jsonify({
-
             "success": False,
-
             "message": "A teacher with this mobile number is already registered."
-
         }), 409
 
+    # Generate next unique Teacher ID
+    cursor.execute("""
+        SELECT COALESCE(
+            MAX(
+                CAST(
+                    SUBSTRING(teacher_id FROM 5) AS INTEGER
+                )
+            ),
+            0
+        ) AS last_number
+        FROM teachers
+        WHERE teacher_id ~ '^TCH-[0-9]+$'
+    """)
 
-    cursor.execute(
-        "SELECT COUNT(*) AS total FROM teachers"
-    )
+    result = cursor.fetchone()
 
-    total_teachers = cursor.fetchone()["total"]
+    last_number = result["last_number"]
 
-    teacher_id = f"TCH-{total_teachers + 1:06d}"
-
+    teacher_id = f"TCH-{last_number + 1:06d}"
 
     password_hash = generate_password_hash(password)
-
 
     cursor.execute("""
         INSERT INTO teachers
@@ -473,35 +460,25 @@ def register_teacher():
         )
         VALUES (%s, %s, %s, %s, %s, %s)
     """, (
-
         teacher_id,
         name,
         mobile,
         category,
         program,
         password_hash
-
     ))
 
-
     connection.commit()
-
     connection.close()
 
-
     return jsonify({
-
         "success": True,
-
         "message": "Teacher registered successfully.",
-
         "teacher_id": teacher_id,
-
         "name": name,
-
         "program": program
-
     }), 201
+
 
 
 # =========================================================
@@ -1671,6 +1648,70 @@ def get_teacher_students():
         "semester": semester,
         "total_students": len(result),
         "students": result
+    }), 200
+
+
+# =========================================================
+# TEACHER VIEW STUDENT ATTENDANCE
+# =========================================================
+
+@app.route("/api/teacher/student-attendance", methods=["GET"])
+def teacher_student_attendance():
+
+    student_id = request.args.get("student_id", "").strip()
+
+    if not student_id:
+        return jsonify({
+            "success": False,
+            "message": "Student ID is required."
+        }), 400
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT student_id, name
+        FROM students
+        WHERE student_id = %s
+    """, (student_id,))
+
+    student = cursor.fetchone()
+
+    if not student:
+        connection.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Student not found."
+        }), 404
+
+    cursor.execute("""
+        SELECT attendance_date, status
+        FROM attendance
+        WHERE student_id = %s
+        ORDER BY attendance_date DESC
+    """, (student_id,))
+
+    attendance_records = cursor.fetchall()
+
+    connection.close()
+
+    attendance = []
+
+    for record in attendance_records:
+
+        attendance.append({
+            "attendance_date": record["attendance_date"],
+            "status": record["status"]
+        })
+
+    return jsonify({
+        "success": True,
+        "student": {
+            "student_id": student["student_id"],
+            "name": student["name"]
+        },
+        "attendance": attendance
     }), 200
 
 @app.route("/admin.html")
