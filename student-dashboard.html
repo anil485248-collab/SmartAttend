@@ -826,9 +826,7 @@ if (!studentData) {
 async function loadAttendance(studentId) {
 
     const message =
-        document.getElementById(
-            "attendanceMessage"
-        );
+        document.getElementById("attendanceMessage");
 
     try {
 
@@ -862,6 +860,8 @@ async function loadAttendance(studentId) {
         attendance =
             data.summary.attendance_percentage || 0;
 
+
+        // Update dashboard cards
         document.getElementById(
             "totalDays"
         ).textContent =
@@ -882,7 +882,25 @@ async function loadAttendance(studentId) {
         ).textContent =
             attendance + "%";
 
-        if (totalDays === 0) {
+
+        // Show today's attendance status
+        const today =
+            new Date()
+                .toISOString()
+                .split("T")[0];
+
+        const todayRecord =
+            (data.history || []).find(
+                record => record.date === today
+            );
+
+        if (todayRecord &&
+            todayRecord.status === "Present") {
+
+            message.textContent =
+                "✅ Today's Attendance: PRESENT";
+
+        } else if (totalDays === 0) {
 
             message.textContent =
                 "No attendance records found yet.";
@@ -891,12 +909,13 @@ async function loadAttendance(studentId) {
 
             message.textContent =
                 "Attendance loaded from database.";
-
         }
+
 
         displayHistory(
             data.history || []
         );
+
 
     } catch (error) {
 
@@ -926,96 +945,6 @@ async function loadAttendance(studentId) {
 
         `;
     }
-}
-
-function displayHistory(history) {
-
-    const table =
-        document.getElementById(
-            "historyTable"
-        );
-
-    if (!history || history.length === 0) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="3"
-                    class="no-records">
-
-                    No attendance records available.
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-    }
-
-    table.innerHTML = "";
-
-    history.forEach(record => {
-
-        const row =
-            document.createElement("tr");
-
-        const dateCell =
-            document.createElement("td");
-
-        const dayCell =
-            document.createElement("td");
-
-        const statusCell =
-            document.createElement("td");
-
-        const dateObject =
-            new Date(
-                record.date + "T00:00:00"
-            );
-
-        dateCell.textContent =
-            dateObject.toLocaleDateString(
-                "en-IN",
-                {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric"
-                }
-            );
-
-        dayCell.textContent =
-            dateObject.toLocaleDateString(
-                "en-IN",
-                {
-                    weekday: "long"
-                }
-            );
-
-        statusCell.textContent =
-            record.status;
-
-        if (record.status === "Present") {
-
-            statusCell.className =
-                "status-present";
-
-        } else {
-
-            statusCell.className =
-                "status-absent";
-        }
-
-        row.appendChild(dateCell);
-        row.appendChild(dayCell);
-        row.appendChild(statusCell);
-
-        table.appendChild(row);
-
-    });
 }
 
 
@@ -1247,6 +1176,7 @@ async function markGPSAttendance() {
 
             document.getElementById("gpsStatus").textContent =
                 "✅ Attendance marked Present successfully!";
+                
 
             alert("✅ Today's attendance has been marked Present.");
 
@@ -1297,8 +1227,8 @@ function startAttendanceTimer() {
     clearInterval(attendanceTimer);
     attendanceTimer = null;
 
-    timerElement.textContent =
-        "✅ 60 minutes completed. Attendance eligible.";
+   timerElement.textContent =
+    "🟩 Required time completed. Attendance eligible.";
 
     document.getElementById("gpsStatus").textContent =
         "🟢 Required presence time completed.";
