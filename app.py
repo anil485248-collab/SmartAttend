@@ -879,12 +879,9 @@ def mark_attendance():
 def get_student_attendance(student_id):
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
-
     # Check student
-
     cursor.execute("""
         SELECT
             student_id,
@@ -896,25 +893,17 @@ def get_student_attendance(student_id):
         WHERE student_id = %s
     """, (student_id,))
 
-
     student = cursor.fetchone()
 
-
     if not student:
-
         connection.close()
 
         return jsonify({
-
             "success": False,
-
             "message": "Student not found."
-
         }), 404
 
-
     # Attendance records
-
     cursor.execute("""
         SELECT
             attendance_date,
@@ -925,92 +914,67 @@ def get_student_attendance(student_id):
         ORDER BY attendance_date DESC
     """, (student_id,))
 
-
     records = cursor.fetchall()
 
-
     # Calculate attendance
-
     total_days = len(records)
 
     present_days = sum(
         1
         for record in records
-        if record["status"] == "Present"
+        if str(record["status"]).strip().lower() == "present"
     )
 
     absent_days = sum(
         1
         for record in records
-        if record["status"] == "Absent"
+        if str(record["status"]).strip().lower() == "absent"
     )
 
-
+    # Calculate percentage
     if total_days > 0:
-
         attendance_percentage = round(
             (present_days / total_days) * 100,
             2
         )
-
     else:
-
         attendance_percentage = 0
 
-
+    # Attendance history
     attendance_history = []
-
 
     for record in records:
 
         attendance_history.append({
-
             "date": record["attendance_date"],
-
             "status": record["status"],
-
             "marked_at": record["marked_at"]
-
         })
 
-
     connection.close()
-
 
     return jsonify({
 
         "success": True,
 
         "student": {
-
             "student_id": student["student_id"],
-
             "name": student["name"],
-
             "program": student["program"],
-
             "branch": student["branch"],
-
             "semester": student["semester"]
-
         },
 
         "summary": {
-
-            "present_days": present_days,
-
-            "absent_days": absent_days,
-
             "total_days": total_days,
-
+            "present_days": present_days,
+            "absent_days": absent_days,
             "attendance_percentage": attendance_percentage
-
         },
 
         "history": attendance_history
 
     }), 200
-
 
 # =========================================================
 # TEACHER LOGIN
