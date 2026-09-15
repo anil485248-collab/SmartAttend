@@ -329,8 +329,7 @@ def add_cors_headers(response):
 
 @app.route("/")
 def home():
-
-    return "SmartAttend Backend is Running!"
+    return send_from_directory(".", "index.html")
 
 
 # =========================================================
